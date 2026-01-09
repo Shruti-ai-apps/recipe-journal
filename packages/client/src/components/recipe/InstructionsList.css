@@ -1,0 +1,77 @@
+/**
+ * Instructions list styles
+ */
+
+.instructions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step;
+}
+
+.instruction-item {
+  display: flex;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.instruction-item:last-child {
+  border-bottom: none;
+}
+
+.step-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.instruction-content {
+  flex: 1;
+}
+
+.instruction-text {
+  margin: 0;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.instruction-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+}
+
+.meta-badge svg {
+  width: 14px;
+  height: 14px;
+}
+
+.meta-badge--temp {
+  background: #fef2f2;
+  color: var(--color-danger);
+}
+
+.meta-badge--time {
+  background: #f0fdf4;
+  color: var(--color-secondary);
+}

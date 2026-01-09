@@ -1,0 +1,54 @@
+{
+  "name": "recipe-journal",
+  "version": "1.0.0",
+  "description": "A recipe journal application to import, scale, and save your favorite recipes",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "npm run dev -w @recipe-journal/server",
+    "dev:client": "npm run dev -w @recipe-journal/client",
+    "build": "npm run build -w @recipe-journal/shared && npm run build -w @recipe-journal/server && npm run build -w @recipe-journal/client",
+    "build:shared": "npm run build -w @recipe-journal/shared",
+    "build:server": "npm run build -w @recipe-journal/server",
+    "build:client": "npm run build -w @recipe-journal/client",
+    "test": "npm run test --workspaces --if-present",
+    "test:server": "npm run test -w @recipe-journal/server",
+    "test:client": "npm run test -w @recipe-journal/client",
+    "lint": "eslint packages/*/src --ext .ts,.tsx",
+    "lint:fix": "eslint packages/*/src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"packages/*/src/**/*.{ts,tsx,css,json}\"",
+    "format:check": "prettier --check \"packages/*/src/**/*.{ts,tsx,css,json}\"",
+    "clean": "rimraf packages/*/dist packages/*/node_modules node_modules"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shruti/recipe-journal.git"
+  },
+  "keywords": [
+    "recipe",
+    "cooking",
+    "ingredients",
+    "scaling",
+    "converter"
+  ],
+  "author": "Shruti",
+  "license": "MIT"
+}

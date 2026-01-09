@@ -1,0 +1,26 @@
+{
+  "name": "@recipe-journal/shared",
+  "version": "1.0.0",
+  "description": "Shared types and utilities for Recipe Journal",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3"
+  },
+  "files": [
+    "dist"
+  ]
+}

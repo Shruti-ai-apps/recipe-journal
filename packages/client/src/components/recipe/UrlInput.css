@@ -1,0 +1,116 @@
+/**
+ * URL input styles
+ */
+
+.url-input-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-md);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.url-input-wrapper {
+  display: flex;
+  width: 100%;
+  gap: var(--spacing-sm);
+}
+
+.url-input {
+  flex: 1;
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.url-input--error {
+  border-color: var(--color-danger);
+}
+
+.url-input--error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.url-input:disabled {
+  background: var(--color-border-light);
+  cursor: not-allowed;
+}
+
+.paste-button {
+  padding: var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.paste-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.paste-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paste-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.url-error {
+  color: var(--color-danger);
+  font-size: var(--font-size-sm);
+  margin: 0;
+}
+
+.submit-button {
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background: var(--color-primary);
+  color: white;
+  font-weight: 600;
+  border-radius: var(--radius-lg);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.submit-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+}
+
+.submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.submit-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.url-hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .url-input {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+
+  .submit-button {
+    width: 100%;
+    padding: var(--spacing-md);
+  }
+}
