@@ -1,5 +1,5 @@
 /**
- * Error message styles
+ * Error message styles - Warm Culinary Editorial
  */
 
 .error-message {
@@ -7,45 +7,136 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background: #fef2f2;
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-md);
-  margin: var(--spacing-md) 0;
+  padding: var(--spacing-lg);
+  background: var(--color-danger-light);
+  border: 1px solid rgba(196, 77, 77, 0.2);
+  border-left: 4px solid var(--color-danger);
+  border-radius: var(--radius-lg);
+  margin: var(--spacing-lg) 0;
+  animation: slideInRight 0.4s ease-out;
+  position: relative;
+  overflow: hidden;
+}
+
+.error-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(196, 77, 77, 0.05) 0%, transparent 50%);
+  pointer-events: none;
 }
 
 .error-content {
   display: flex;
   align-items: flex-start;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-md);
+  position: relative;
+  z-index: 1;
 }
 
 .error-icon {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   color: var(--color-danger);
   flex-shrink: 0;
-  margin-top: 2px;
+  margin-top: 1px;
 }
 
 .error-text {
   color: var(--color-danger);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   margin: 0;
+  line-height: 1.5;
 }
 
 .error-dismiss {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
   color: var(--color-danger);
-  padding: var(--spacing-xs);
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 50%;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
 }
 
 .error-dismiss:hover {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(196, 77, 77, 0.15);
+  transform: scale(1.1);
+}
+
+.error-dismiss:active {
+  transform: scale(1);
 }
 
 .error-dismiss svg {
   width: 16px;
   height: 16px;
+}
+
+/* Success variant */
+.error-message--success {
+  background: var(--color-success-light);
+  border-color: rgba(74, 103, 65, 0.2);
+  border-left-color: var(--color-success);
+}
+
+.error-message--success::before {
+  background: linear-gradient(90deg, rgba(74, 103, 65, 0.05) 0%, transparent 50%);
+}
+
+.error-message--success .error-icon,
+.error-message--success .error-text,
+.error-message--success .error-dismiss {
+  color: var(--color-success);
+}
+
+.error-message--success .error-dismiss:hover {
+  background: rgba(74, 103, 65, 0.15);
+}
+
+/* Warning variant */
+.error-message--warning {
+  background: var(--color-warning-light);
+  border-color: rgba(196, 137, 61, 0.2);
+  border-left-color: var(--color-warning);
+}
+
+.error-message--warning::before {
+  background: linear-gradient(90deg, rgba(196, 137, 61, 0.05) 0%, transparent 50%);
+}
+
+.error-message--warning .error-icon,
+.error-message--warning .error-text,
+.error-message--warning .error-dismiss {
+  color: var(--color-warning);
+}
+
+.error-message--warning .error-dismiss:hover {
+  background: rgba(196, 137, 61, 0.15);
+}
+
+@media (max-width: 768px) {
+  .error-message {
+    padding: var(--spacing-md);
+  }
+
+  .error-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .error-text {
+    font-size: var(--font-size-xs);
+  }
 }

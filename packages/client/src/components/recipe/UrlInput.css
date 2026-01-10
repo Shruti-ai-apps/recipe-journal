@@ -1,62 +1,101 @@
 /**
- * URL input styles
+ * URL input styles - Warm Culinary Editorial
  */
 
 .url-input-form {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-md);
-  max-width: 600px;
+  gap: var(--spacing-lg);
+  max-width: 640px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .url-input-wrapper {
   display: flex;
   width: 100%;
   gap: var(--spacing-sm);
+  position: relative;
 }
 
 .url-input {
   flex: 1;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
   font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
   border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.url-input::placeholder {
+  color: var(--color-text-light);
+}
+
+.url-input:hover {
+  border-color: var(--color-border-strong);
 }
 
 .url-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px var(--color-primary-light);
+  box-shadow: var(--shadow-glow), var(--shadow-md);
+  transform: translateY(-1px);
 }
 
 .url-input--error {
   border-color: var(--color-danger);
+  animation: shake 0.4s ease-out;
 }
 
 .url-input--error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 0 3px rgba(196, 77, 77, 0.12), var(--shadow-md);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
 .url-input:disabled {
-  background: var(--color-border-light);
+  background: var(--color-background-warm);
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .paste-button {
-  padding: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
   border: 2px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
   background: var(--color-surface);
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
 }
 
 .paste-button:hover:not(:disabled) {
   border-color: var(--color-primary);
   color: var(--color-primary);
+  background: var(--color-primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.paste-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .paste-button:disabled {
@@ -65,28 +104,63 @@
 }
 
 .paste-button svg {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
 }
 
 .url-error {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
   color: var(--color-danger);
   font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
   margin: 0;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.url-error::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: var(--color-danger);
+  border-radius: 50%;
 }
 
 .submit-button {
   padding: var(--spacing-md) var(--spacing-2xl);
-  background: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
-  transition: background var(--transition-fast), transform var(--transition-fast);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  color: var(--color-text-inverse);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-full);
+  border: none;
+  transition: all var(--transition-fast);
+  box-shadow:
+    0 4px 14px rgba(196, 93, 53, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
 }
 
 .submit-button:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(196, 93, 53, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.submit-button:hover:not(:disabled)::before {
+  opacity: 1;
 }
 
 .submit-button:active:not(:disabled) {
@@ -96,21 +170,48 @@
 .submit-button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+  box-shadow: none;
+}
+
+.submit-button span {
+  position: relative;
+  z-index: 1;
 }
 
 .url-hint {
   font-size: var(--font-size-sm);
   color: var(--color-text-light);
   margin: 0;
+  text-align: center;
+  max-width: 400px;
+}
+
+.url-hint::before {
+  content: '✨ ';
 }
 
 @media (max-width: 768px) {
   .url-input {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    font-size: var(--font-size-sm);
+  }
+
+  .paste-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  .paste-button svg {
+    width: 18px;
+    height: 18px;
   }
 
   .submit-button {
     width: 100%;
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+  }
+
+  .url-hint {
+    font-size: var(--font-size-xs);
   }
 }
