@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Journal - Color Palette Options</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #f8f6f3;
+      padding: 40px 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-family: 'Fraunces', serif;
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      color: #2C2522;
+    }
+    .subtitle {
+      text-align: center;
+      color: #6B5D54;
+      margin-bottom: 48px;
+      font-size: 1.1rem;
+    }
+    .palettes {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 32px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .palette {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .palette:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    }
+    .palette.current {
+      border: 3px solid #C45D35;
+    }
+    .palette.current::before {
+      content: 'CURRENT';
+      position: absolute;
+      top: -12px;
+      left: 24px;
+      background: #C45D35;
+      color: white;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+    .palette { position: relative; }
+    .palette-name {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #2C2522;
+    }
+    .palette-feel {
+      font-size: 0.9rem;
+      color: #9A8B82;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .colors {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .color {
+      flex: 1;
+      aspect-ratio: 1;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding: 8px;
+      font-size: 10px;
+      font-weight: 600;
+      color: white;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      min-height: 80px;
+    }
+    .color.light-text { color: #2C2522; text-shadow: none; }
+    .color-label { font-size: 9px; opacity: 0.8; margin-bottom: 2px; }
+    .preview {
+      background: #f8f6f3;
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .preview-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .preview-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+    }
+    .preview-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+    .preview-btn {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: white;
+      cursor: pointer;
+    }
+    .preview-card {
+      background: white;
+      border-radius: 10px;
+      padding: 12px;
+      margin-top: 12px;
+      border-left: 4px solid;
+    }
+    .preview-card-title {
+      font-family: 'Fraunces', serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 4px;
+    }
+    .preview-card-text {
+      font-size: 0.8rem;
+      color: #6B5D54;
+    }
+
+    /* Dark theme preview */
+    .dark-section {
+      background: #1a1a1a;
+      padding: 48px 20px;
+      margin: 48px -20px -40px;
+    }
+    .dark-section h2 {
+      font-family: 'Fraunces', serif;
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 12px;
+      color: #fff;
+    }
+    .dark-section .subtitle {
+      color: #888;
+    }
+    .dark-section .palette {
+      background: #2a2a2a;
+    }
+    .dark-section .palette-name {
+      color: #fff;
+    }
+    .dark-section .preview {
+      background: #1a1a1a;
+    }
+    .dark-section .preview-title {
+      color: #fff;
+    }
+    .dark-section .preview-card {
+      background: #2a2a2a;
+    }
+    .dark-section .preview-card-title {
+      color: #fff;
+    }
+    .dark-section .preview-card-text {
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Recipe Journal Color Palettes</h1>
+  <p class="subtitle">Choose a theme that matches your culinary style</p>
+
+  <div class="palettes">
+    <!-- 1. Warm Terracotta (Current) -->
+    <div class="palette current">
+      <div class="palette-name">Warm Terracotta</div>
+      <div class="palette-feel">Rustic, Mediterranean, artisanal</div>
+      <div class="colors">
+        <div class="color" style="background: #C45D35;">
+          <span class="color-label">Primary</span>
+          #C45D35
+        </div>
+        <div class="color" style="background: #4A6741;">
+          <span class="color-label">Secondary</span>
+          #4A6741
+        </div>
+        <div class="color" style="background: #D4A853;">
+          <span class="color-label">Accent</span>
+          #D4A853
+        </div>
+        <div class="color light-text" style="background: #FAF6F1;">
+          <span class="color-label">Background</span>
+          #FAF6F1
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #C45D35;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #C45D35;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #4A6741;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Fresh Herb Garden -->
+    <div class="palette">
+      <div class="palette-name">Fresh Herb Garden</div>
+      <div class="palette-feel">Farm-to-table, organic, fresh</div>
+      <div class="colors">
+        <div class="color" style="background: #2D5A45;">
+          <span class="color-label">Primary</span>
+          #2D5A45
+        </div>
+        <div class="color" style="background: #D4A853;">
+          <span class="color-label">Secondary</span>
+          #D4A853
+        </div>
+        <div class="color" style="background: #8B4513;">
+          <span class="color-label">Accent</span>
+          #8B4513
+        </div>
+        <div class="color light-text" style="background: #F5F7F2;">
+          <span class="color-label">Background</span>
+          #F5F7F2
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #2D5A45;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #2D5A45;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #D4A853;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Coastal Kitchen -->
+    <div class="palette">
+      <div class="palette-name">Coastal Kitchen</div>
+      <div class="palette-feel">Seafood-focused, bright, airy</div>
+      <div class="colors">
+        <div class="color" style="background: #1E6B7B;">
+          <span class="color-label">Primary</span>
+          #1E6B7B
+        </div>
+        <div class="color" style="background: #E8985E;">
+          <span class="color-label">Secondary</span>
+          #E8985E
+        </div>
+        <div class="color" style="background: #2D5A45;">
+          <span class="color-label">Accent</span>
+          #2D5A45
+        </div>
+        <div class="color light-text" style="background: #F5F0E8;">
+          <span class="color-label">Background</span>
+          #F5F0E8
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #1E6B7B;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #1E6B7B;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #E8985E;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. French Bistro -->
+    <div class="palette">
+      <div class="palette-name">French Bistro</div>
+      <div class="palette-feel">Elegant, sophisticated, classic</div>
+      <div class="colors">
+        <div class="color" style="background: #8B2942;">
+          <span class="color-label">Primary</span>
+          #8B2942
+        </div>
+        <div class="color" style="background: #C9A962;">
+          <span class="color-label">Secondary</span>
+          #C9A962
+        </div>
+        <div class="color" style="background: #2C3E50;">
+          <span class="color-label">Accent</span>
+          #2C3E50
+        </div>
+        <div class="color light-text" style="background: #FAF8F5;">
+          <span class="color-label">Background</span>
+          #FAF8F5
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #8B2942;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #8B2942;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #C9A962;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Japanese Minimal -->
+    <div class="palette">
+      <div class="palette-name">Japanese Minimal</div>
+      <div class="palette-feel">Clean, refined, zen</div>
+      <div class="colors">
+        <div class="color" style="background: #1A1A2E;">
+          <span class="color-label">Primary</span>
+          #1A1A2E
+        </div>
+        <div class="color" style="background: #C41E3A;">
+          <span class="color-label">Secondary</span>
+          #C41E3A
+        </div>
+        <div class="color" style="background: #4A6741;">
+          <span class="color-label">Accent</span>
+          #4A6741
+        </div>
+        <div class="color light-text" style="background: #F5F0E8;">
+          <span class="color-label">Background</span>
+          #F5F0E8
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #1A1A2E;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #C41E3A;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #1A1A2E;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Tuscan Sunset -->
+    <div class="palette">
+      <div class="palette-name">Tuscan Sunset</div>
+      <div class="palette-feel">Warm, earthy, Italian countryside</div>
+      <div class="colors">
+        <div class="color" style="background: #A0522D;">
+          <span class="color-label">Primary</span>
+          #A0522D
+        </div>
+        <div class="color" style="background: #6B4423;">
+          <span class="color-label">Secondary</span>
+          #6B4423
+        </div>
+        <div class="color" style="background: #8B7355;">
+          <span class="color-label">Accent</span>
+          #8B7355
+        </div>
+        <div class="color light-text" style="background: #F4E4BA;">
+          <span class="color-label">Background</span>
+          #F4E4BA
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #A0522D;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #A0522D;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #6B4423;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Modern Nordic -->
+    <div class="palette">
+      <div class="palette-name">Modern Nordic</div>
+      <div class="palette-feel">Minimalist, Scandinavian, clean</div>
+      <div class="colors">
+        <div class="color" style="background: #2E4057;">
+          <span class="color-label">Primary</span>
+          #2E4057
+        </div>
+        <div class="color" style="background: #048A81;">
+          <span class="color-label">Secondary</span>
+          #048A81
+        </div>
+        <div class="color" style="background: #5C7AEA;">
+          <span class="color-label">Accent</span>
+          #5C7AEA
+        </div>
+        <div class="color light-text" style="background: #F8F4E3;">
+          <span class="color-label">Background</span>
+          #F8F4E3
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #2E4057;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #048A81;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #2E4057;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8. Spice Market -->
+    <div class="palette">
+      <div class="palette-name">Spice Market</div>
+      <div class="palette-feel">Bold, exotic, aromatic</div>
+      <div class="colors">
+        <div class="color" style="background: #B7410E;">
+          <span class="color-label">Primary</span>
+          #B7410E
+        </div>
+        <div class="color" style="background: #DAA520;">
+          <span class="color-label">Secondary</span>
+          #DAA520
+        </div>
+        <div class="color" style="background: #4A0E0E;">
+          <span class="color-label">Accent</span>
+          #4A0E0E
+        </div>
+        <div class="color light-text" style="background: #FFF8F0;">
+          <span class="color-label">Background</span>
+          #FFF8F0
+        </div>
+      </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="preview-logo" style="background: #B7410E;"></div>
+          <span class="preview-title" style="color: #2C2522;">Recipe Journal</span>
+        </div>
+        <button class="preview-btn" style="background: #B7410E;">Get Recipe</button>
+        <div class="preview-card" style="border-color: #DAA520;">
+          <div class="preview-card-title" style="color: #2C2522;">Ingredients</div>
+          <div class="preview-card-text">Fresh herbs and spices...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dark-section">
+    <h2>Dark Theme Variants</h2>
+    <p class="subtitle">Same palettes, optimized for dark mode</p>
+
+    <div class="palettes">
+      <!-- Dark Terracotta -->
+      <div class="palette">
+        <div class="palette-name">Warm Terracotta Dark</div>
+        <div class="palette-feel">Cozy evening cooking vibes</div>
+        <div class="colors">
+          <div class="color" style="background: #E07A52;">
+            <span class="color-label">Primary</span>
+            #E07A52
+          </div>
+          <div class="color" style="background: #6B9B5E;">
+            <span class="color-label">Secondary</span>
+            #6B9B5E
+          </div>
+          <div class="color" style="background: #1E1A18;">
+            <span class="color-label">Background</span>
+            #1E1A18
+          </div>
+          <div class="color" style="background: #2A2522;">
+            <span class="color-label">Surface</span>
+            #2A2522
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-header">
+            <div class="preview-logo" style="background: #E07A52;"></div>
+            <span class="preview-title">Recipe Journal</span>
+          </div>
+          <button class="preview-btn" style="background: #E07A52;">Get Recipe</button>
+          <div class="preview-card" style="border-color: #6B9B5E;">
+            <div class="preview-card-title">Ingredients</div>
+            <div class="preview-card-text">Fresh herbs and spices...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dark Coastal -->
+      <div class="palette">
+        <div class="palette-name">Coastal Kitchen Dark</div>
+        <div class="palette-feel">Deep ocean at night</div>
+        <div class="colors">
+          <div class="color" style="background: #3BA5B5;">
+            <span class="color-label">Primary</span>
+            #3BA5B5
+          </div>
+          <div class="color" style="background: #F0A870;">
+            <span class="color-label">Secondary</span>
+            #F0A870
+          </div>
+          <div class="color" style="background: #0F1A1C;">
+            <span class="color-label">Background</span>
+            #0F1A1C
+          </div>
+          <div class="color" style="background: #1A2A2E;">
+            <span class="color-label">Surface</span>
+            #1A2A2E
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-header">
+            <div class="preview-logo" style="background: #3BA5B5;"></div>
+            <span class="preview-title">Recipe Journal</span>
+          </div>
+          <button class="preview-btn" style="background: #3BA5B5;">Get Recipe</button>
+          <div class="preview-card" style="border-color: #F0A870;">
+            <div class="preview-card-title">Ingredients</div>
+            <div class="preview-card-text">Fresh herbs and spices...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dark French Bistro -->
+      <div class="palette">
+        <div class="palette-name">French Bistro Dark</div>
+        <div class="palette-feel">Intimate candlelit dinner</div>
+        <div class="colors">
+          <div class="color" style="background: #C84B6C;">
+            <span class="color-label">Primary</span>
+            #C84B6C
+          </div>
+          <div class="color" style="background: #D4B872;">
+            <span class="color-label">Secondary</span>
+            #D4B872
+          </div>
+          <div class="color" style="background: #1A1418;">
+            <span class="color-label">Background</span>
+            #1A1418
+          </div>
+          <div class="color" style="background: #2A2228;">
+            <span class="color-label">Surface</span>
+            #2A2228
+          </div>
+        </div>
+        <div class="preview">
+          <div class="preview-header">
+            <div class="preview-logo" style="background: #C84B6C;"></div>
+            <span class="preview-title">Recipe Journal</span>
+          </div>
+          <button class="preview-btn" style="background: #C84B6C;">Get Recipe</button>
+          <div class="preview-card" style="border-color: #D4B872;">
+            <div class="preview-card-title">Ingredients</div>
+            <div class="preview-card-text">Fresh herbs and spices...</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

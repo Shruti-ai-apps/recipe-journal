@@ -1,37 +1,59 @@
 /**
- * FavoritesList component styles
+ * FavoritesList component styles - Warm Culinary Editorial
  */
 
 .favorites-list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
 }
+
+/* Staggered animation delays for list items */
+.favorites-list > *:nth-child(1) { animation-delay: 0.05s; }
+.favorites-list > *:nth-child(2) { animation-delay: 0.10s; }
+.favorites-list > *:nth-child(3) { animation-delay: 0.15s; }
+.favorites-list > *:nth-child(4) { animation-delay: 0.20s; }
+.favorites-list > *:nth-child(5) { animation-delay: 0.25s; }
+.favorites-list > *:nth-child(6) { animation-delay: 0.30s; }
+.favorites-list > *:nth-child(7) { animation-delay: 0.35s; }
+.favorites-list > *:nth-child(8) { animation-delay: 0.40s; }
+.favorites-list > *:nth-child(n+9) { animation-delay: 0.45s; }
 
 .favorites-list__empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-2xl);
+  padding: var(--spacing-3xl) var(--spacing-xl);
   text-align: center;
   color: var(--color-text-secondary);
+  animation: fadeIn 0.5s ease-out;
 }
 
 .favorites-list__empty-icon {
-  width: 64px;
-  height: 64px;
-  margin-bottom: var(--spacing-md);
-  opacity: 0.5;
+  width: 80px;
+  height: 80px;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-text-light);
+  opacity: 0.4;
+  animation: pulse 2s ease-in-out infinite;
 }
 
 .favorites-list__empty p {
-  font-size: var(--font-size-lg);
-  font-weight: 500;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
   margin: 0 0 var(--spacing-sm) 0;
   color: var(--color-text);
 }
 
 .favorites-list__empty-hint {
   font-size: var(--font-size-sm);
+  color: var(--color-text-light);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+.favorites-list__empty-hint::before {
+  content: '✨ ';
 }

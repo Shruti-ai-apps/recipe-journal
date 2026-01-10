@@ -1,46 +1,78 @@
 /**
- * SaveButton component styles
+ * SaveButton component styles - Warm Culinary Editorial
  */
 
 .save-button {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-sm) var(--spacing-md);
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
   border: 2px solid var(--color-primary);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   background: transparent;
   color: var(--color-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.save-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-primary);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition-normal);
+}
+
+.save-button:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .save-button:hover {
-  background: var(--color-primary);
-  color: white;
+  color: var(--color-text-inverse);
+  box-shadow: 0 4px 12px rgba(196, 93, 53, 0.25);
+}
+
+.save-button__icon,
+.save-button__label {
+  position: relative;
+  z-index: 1;
 }
 
 .save-button--saved {
-  background: var(--color-primary);
-  color: white;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  box-shadow: 0 4px 14px rgba(196, 93, 53, 0.3);
+}
+
+.save-button--saved::before {
+  display: none;
 }
 
 .save-button--saved:hover {
-  background: var(--color-primary-dark, #c45d43);
-  border-color: var(--color-primary-dark, #c45d43);
+  background: linear-gradient(135deg, var(--color-primary-hover) 0%, var(--color-primary-dark) 100%);
+  border-color: var(--color-primary-hover);
 }
 
 .save-button--animating .save-button__icon {
-  animation: save-bounce 0.3s ease;
+  animation: saveBounce 0.4s var(--transition-spring);
 }
 
-@keyframes save-bounce {
+@keyframes saveBounce {
   0% {
     transform: scale(1);
   }
-  50% {
-    transform: scale(1.3);
+  30% {
+    transform: scale(1.4) rotate(-10deg);
+  }
+  60% {
+    transform: scale(0.9);
   }
   100% {
     transform: scale(1);
@@ -49,7 +81,7 @@
 
 /* Size variants */
 .save-button--small {
-  padding: var(--spacing-xs) var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
   font-size: var(--font-size-sm);
 }
 
@@ -64,7 +96,7 @@
 }
 
 .save-button--large {
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-lg) var(--spacing-xl);
   font-size: var(--font-size-lg);
 }
 
@@ -79,5 +111,6 @@
 
 /* Icon-only variant (when showLabel is false) */
 .save-button:not(:has(.save-button__label)) {
-  padding: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border-radius: 50%;
 }

@@ -1,43 +1,99 @@
 /**
- * Export button styles
+ * Export button styles - Warm Culinary Editorial
  */
 
 .export-section {
   display: flex;
-  justify-content: center;
-  padding: var(--spacing-lg);
+  justify-content: flex-start;
 }
 
 .export-button {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-sm);
-  padding: var(--spacing-md) var(--spacing-xl);
-  background: var(--color-primary);
-  color: white;
-  font-weight: 600;
-  border-radius: var(--radius-lg);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
   transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.export-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--color-text);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--transition-normal);
 }
 
 .export-button:hover {
-  background: var(--color-primary-hover);
-  transform: translateY(-1px);
+  border-color: var(--color-text);
+  color: var(--color-text-inverse);
+}
+
+.export-button:hover::before {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .export-button:active {
-  transform: translateY(0);
+  transform: scale(0.98);
 }
 
 .export-button svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
+  position: relative;
+  z-index: 1;
+  transition: transform var(--transition-fast);
+}
+
+.export-button span {
+  position: relative;
+  z-index: 1;
+}
+
+.export-button:hover svg {
+  transform: scale(1.1);
 }
 
 .export-button--success {
-  background: var(--color-secondary);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-hover) 100%);
+  border-color: var(--color-secondary);
+  color: var(--color-text-inverse);
+  box-shadow: 0 4px 12px rgba(74, 103, 65, 0.25);
+}
+
+.export-button--success::before {
+  display: none;
 }
 
 .export-button--success:hover {
-  background: var(--color-secondary-hover);
+  background: linear-gradient(135deg, var(--color-secondary-hover) 0%, #2d4428 100%);
+  border-color: var(--color-secondary-hover);
+  color: var(--color-text-inverse);
+}
+
+.export-button--success svg {
+  animation: checkmark 0.4s ease-out;
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
