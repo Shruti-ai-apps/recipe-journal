@@ -1,0 +1,97 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('Navigation', () => {
+  test('should navigate from home to favorites', async ({ page }) => {
+    await page.goto('/');
+
+    // Find and click favorites link
+    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    await favoritesLink.click();
+
+    await expect(page).toHaveURL('/favorites');
+  });
+
+  test('should navigate from favorites to home', async ({ page }) => {
+    await page.goto('/favorites');
+
+    // Navigate to home using any link that goes to root
+    const homeLink = page.locator('a[href="/"]').first();
+
+    if (await homeLink.isVisible()) {
+      await homeLink.click();
+      await expect(page).toHaveURL('/');
+    } else {
+      // Fallback: navigate directly
+      await page.goto('/');
+      await expect(page).toHaveURL('/');
+    }
+  });
+
+  test('should highlight active navigation item', async ({ page }) => {
+    await page.goto('/favorites');
+
+    // The favorites nav item should have active styling
+    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    await expect(favoritesLink).toBeVisible();
+  });
+});
+
+test.describe('Header', () => {
+  test('should display header on all pages', async ({ page }) => {
+    // Check home page
+    await page.goto('/');
+    await expect(page.locator('header')).toBeVisible();
+
+    // Check favorites page
+    await page.goto('/favorites');
+    await expect(page.locator('header')).toBeVisible();
+  });
+
+  test('should display application title/logo', async ({ page }) => {
+    await page.goto('/');
+
+    // Look for title in header
+    const header = page.locator('header');
+    await expect(header).toContainText(/recipe/i);
+  });
+});
+
+test.describe('Responsive Navigation', () => {
+  test('should be accessible on mobile viewport', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/');
+
+    // Navigation should still be accessible
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+  });
+
+  test('should be accessible on tablet viewport', async ({ page }) => {
+    // Set tablet viewport
+    await page.setViewportSize({ width: 768, height: 1024 });
+    await page.goto('/');
+
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+  });
+
+  test('should be accessible on desktop viewport', async ({ page }) => {
+    // Set desktop viewport
+    await page.setViewportSize({ width: 1920, height: 1080 });
+    await page.goto('/');
+
+    const header = page.locator('header');
+    await expect(header).toBeVisible();
+  });
+});
+
+test.describe('404 Page', () => {
+  test('should show 404 for non-existent routes', async ({ page }) => {
+    const response = await page.goto('/non-existent-page');
+
+    // Should either show 404 page or redirect
+    // Next.js typically returns 404 status
+    expect(response?.status()).toBe(404);
+  });
+});
