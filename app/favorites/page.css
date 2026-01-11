@@ -1,0 +1,171 @@
+/**
+ * FavoritesPage styles - Warm Culinary Editorial
+ */
+
+.favorites-page {
+  max-width: var(--content-width);
+  margin: 0 auto;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.favorites-page__header {
+  margin-bottom: var(--spacing-2xl);
+  text-align: center;
+  position: relative;
+}
+
+.favorites-page__header::before {
+  content: '';
+  position: absolute;
+  top: -var(--spacing-xl);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, var(--color-primary-muted) 0%, transparent 70%);
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.favorites-page__header h1 {
+  margin: 0 0 var(--spacing-sm) 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+  position: relative;
+}
+
+.favorites-page__count {
+  color: var(--color-text-secondary);
+  margin: 0;
+  font-size: var(--font-size-base);
+  position: relative;
+}
+
+.favorites-page__count::before,
+.favorites-page__count::after {
+  content: '—';
+  margin: 0 var(--spacing-sm);
+  color: var(--color-border-strong);
+}
+
+.favorites-page__search {
+  margin-bottom: var(--spacing-xl);
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Modal */
+.favorites-page__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 37, 34, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-md);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.favorites-page__modal {
+  background: var(--color-surface);
+  border-radius: var(--radius-2xl);
+  padding: var(--spacing-2xl);
+  max-width: 420px;
+  width: 100%;
+  box-shadow: var(--shadow-xl);
+  animation: scaleIn 0.3s var(--transition-spring);
+  position: relative;
+  overflow: hidden;
+}
+
+.favorites-page__modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--color-danger), var(--color-danger-hover));
+}
+
+.favorites-page__modal h3 {
+  margin: 0 0 var(--spacing-md) 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  color: var(--color-text);
+}
+
+.favorites-page__modal p {
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--spacing-xl) 0;
+  line-height: 1.6;
+}
+
+.favorites-page__modal-actions {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.favorites-page__modal-cancel,
+.favorites-page__modal-confirm {
+  padding: var(--spacing-md) var(--spacing-xl);
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+}
+
+.favorites-page__modal-cancel {
+  background: var(--color-background-warm);
+  color: var(--color-text-secondary);
+}
+
+.favorites-page__modal-cancel:hover {
+  background: var(--color-border);
+  color: var(--color-text);
+}
+
+.favorites-page__modal-confirm {
+  background: linear-gradient(135deg, var(--color-danger) 0%, var(--color-danger-hover) 100%);
+  color: var(--color-text-inverse);
+  box-shadow: 0 4px 12px rgba(196, 77, 77, 0.25);
+}
+
+.favorites-page__modal-confirm:hover {
+  background: linear-gradient(135deg, var(--color-danger-hover) 0%, #8b2d2d 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(196, 77, 77, 0.3);
+}
+
+.favorites-page__modal-confirm:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .favorites-page__header h1 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .favorites-page__modal {
+    padding: var(--spacing-xl);
+  }
+
+  .favorites-page__modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .favorites-page__modal-cancel,
+  .favorites-page__modal-confirm {
+    width: 100%;
+    text-align: center;
+  }
+}
