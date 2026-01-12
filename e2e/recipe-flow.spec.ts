@@ -1,8 +1,13 @@
 import { test, expect } from '@playwright/test';
+import {
+  setupPage,
+  waitForPageReady,
+  reconThenAct,
+} from './helpers/test-utils';
 
 test.describe('Recipe Flow', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await setupPage(page, '/');
   });
 
   test.describe('URL Validation', () => {
@@ -38,6 +43,9 @@ test.describe('Recipe Flow', () => {
       // Submit by pressing Enter
       await urlInput.press('Enter');
 
+      // Wait for validation to complete
+      await waitForPageReady(page);
+
       // Check for validation error about HTTP/HTTPS
       const errorMessage = page.getByText(/http/i);
       await expect(errorMessage).toBeVisible();
@@ -51,8 +59,8 @@ test.describe('Recipe Flow', () => {
       const submitButton = page.getByRole('button', { name: /get recipe/i });
       await submitButton.click({ force: true });
 
-      // Wait a moment for validation
-      await page.waitForTimeout(500);
+      // Wait for validation using networkidle instead of arbitrary timeout
+      await waitForPageReady(page);
 
       // Check if custom error is shown
       const customError = page.getByText(/please enter a valid url/i);
@@ -61,6 +69,7 @@ test.describe('Recipe Flow', () => {
       if (hasCustomError) {
         // Type more text - error should clear
         await urlInput.fill('invalid-more');
+        await waitForPageReady(page);
         await expect(customError).not.toBeVisible();
       } else {
         // Test passes - browser handles validation differently
@@ -77,49 +86,57 @@ test.describe('Recipe Flow', () => {
       // Initially disabled
       await expect(submitButton).toBeDisabled();
 
-      // Fill valid URL
+      // Fill valid URL and wait for state update
       await urlInput.fill('https://example.com/recipe');
+      await waitForPageReady(page);
 
       // Should be enabled now
       await expect(submitButton).toBeEnabled();
     });
 
     test('should show loading state when submitting valid URL', async ({ page }) => {
-      const urlInput = page.getByLabel('Recipe URL');
-      await urlInput.fill('https://www.allrecipes.com/recipe/12345');
+      await reconThenAct(page, async () => {
+        const urlInput = page.getByLabel('Recipe URL');
+        await urlInput.fill('https://www.allrecipes.com/recipe/12345');
 
-      const submitButton = page.getByRole('button', { name: /get recipe/i });
-      await submitButton.click();
+        const submitButton = page.getByRole('button', { name: /get recipe/i });
+        await submitButton.click();
 
-      // Check for loading state - button text changes to Loading...
-      await expect(page.getByRole('button', { name: /loading/i })).toBeVisible();
+        // Check for loading state - button text changes to Loading...
+        await expect(page.getByRole('button', { name: /loading/i })).toBeVisible();
+      });
     });
 
     test('should disable input during loading', async ({ page }) => {
-      const urlInput = page.getByLabel('Recipe URL');
-      await urlInput.fill('https://www.allrecipes.com/recipe/12345');
+      await reconThenAct(page, async () => {
+        const urlInput = page.getByLabel('Recipe URL');
+        await urlInput.fill('https://www.allrecipes.com/recipe/12345');
 
-      const submitButton = page.getByRole('button', { name: /get recipe/i });
-      await submitButton.click();
+        const submitButton = page.getByRole('button', { name: /get recipe/i });
+        await submitButton.click();
 
-      // Input should be disabled during loading
-      await expect(urlInput).toBeDisabled();
+        // Input should be disabled during loading
+        await expect(urlInput).toBeDisabled();
+      });
     });
   });
 
   test.describe('Keyboard Navigation', () => {
     test('should submit form on Enter key', async ({ page }) => {
-      const urlInput = page.getByLabel('Recipe URL');
-      await urlInput.fill('https://example.com/recipe');
-      await urlInput.press('Enter');
+      await reconThenAct(page, async () => {
+        const urlInput = page.getByLabel('Recipe URL');
+        await urlInput.fill('https://example.com/recipe');
+        await urlInput.press('Enter');
 
-      // Should trigger submission (loading state) - button text changes
-      await expect(page.getByRole('button', { name: /loading/i })).toBeVisible();
+        // Should trigger submission (loading state) - button text changes
+        await expect(page.getByRole('button', { name: /loading/i })).toBeVisible();
+      });
     });
 
     test('should focus URL input on page load', async ({ page }) => {
       // Reload page to test initial focus
       await page.reload();
+      await waitForPageReady(page);
 
       // URL input should be focusable
       const urlInput = page.getByLabel('Recipe URL');

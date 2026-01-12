@@ -1,23 +1,21 @@
 import { test, expect } from '@playwright/test';
+import { setupPage, waitForPageReady } from './helpers/test-utils';
 
 test.describe('Home Page', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+    await setupPage(page, '/');
   });
 
   test('should load the home page successfully', async ({ page }) => {
-    // Check page loads without errors
     await expect(page).toHaveURL('/');
   });
 
   test('should display the application header', async ({ page }) => {
-    // Check header is visible
     const header = page.locator('header');
     await expect(header).toBeVisible();
   });
 
   test('should display the URL input form', async ({ page }) => {
-    // Check URL input is visible
     const urlInput = page.getByLabel('Recipe URL');
     await expect(urlInput).toBeVisible();
     await expect(urlInput).toHaveAttribute('placeholder', /https:\/\//);

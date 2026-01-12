@@ -1,11 +1,15 @@
 import { test, expect } from '@playwright/test';
+import {
+  setupPage,
+  waitForPageReady,
+  clearStateAndReload,
+} from './helpers/test-utils';
 
 test.describe('Theme Switching', () => {
   test.beforeEach(async ({ page }) => {
     // Clear localStorage to start fresh
     await page.goto('/');
-    await page.evaluate(() => localStorage.clear());
-    await page.reload();
+    await clearStateAndReload(page);
   });
 
   test('should have theme attribute on html element', async ({ page }) => {
@@ -29,6 +33,7 @@ test.describe('Theme Switching', () => {
 
     if (await themeToggle.isVisible()) {
       await themeToggle.click();
+      await waitForPageReady(page);
 
       // Theme should change
       const newTheme = await html.getAttribute('data-theme');
@@ -42,6 +47,7 @@ test.describe('Theme Switching', () => {
 
     if (await themeToggle.isVisible()) {
       await themeToggle.click();
+      await waitForPageReady(page);
 
       // Check localStorage
       const storedTheme = await page.evaluate(() => localStorage.getItem('recipe-journal-theme'));
@@ -50,9 +56,6 @@ test.describe('Theme Switching', () => {
   });
 
   test('should load persisted theme on page reload', async ({ page }) => {
-    // First load the page
-    await page.goto('/');
-
     // Set theme to dark in localStorage
     await page.evaluate(() => {
       localStorage.setItem('recipe-journal-theme', 'dark');
@@ -60,6 +63,7 @@ test.describe('Theme Switching', () => {
 
     // Reload to apply persisted theme
     await page.reload();
+    await waitForPageReady(page);
 
     // Check if theme was applied (some apps may not use data-theme attribute)
     const html = page.locator('html');
@@ -93,7 +97,7 @@ test.describe('Theme Switching', () => {
 
 test.describe('Color Scheme Preference', () => {
   test('should render with a valid theme', async ({ page }) => {
-    await page.goto('/');
+    await setupPage(page, '/');
 
     // Check that the page renders correctly
     const body = page.locator('body');
@@ -106,7 +110,7 @@ test.describe('Color Scheme Preference', () => {
   test('should support dark mode media query', async ({ page }) => {
     // Emulate dark color scheme
     await page.emulateMedia({ colorScheme: 'dark' });
-    await page.goto('/');
+    await setupPage(page, '/');
 
     // Page should still render correctly in dark mode
     const body = page.locator('body');
