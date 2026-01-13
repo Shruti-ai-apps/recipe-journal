@@ -1,11 +1,13 @@
 'use client';
 
 /**
- * Header component with theme toggle and palette selector
+ * Header component with theme toggle, palette selector, and user menu
  */
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useTheme, PALETTES } from '@/contexts/ThemeContext';
+import { UserMenu } from '@/components/auth';
 import './Header.css';
 
 function Header() {
@@ -30,7 +32,7 @@ function Header() {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">
+        <Link href="/" className="logo">
           <svg
             className="logo-icon"
             viewBox="0 0 24 24"
@@ -44,7 +46,7 @@ function Header() {
             <line x1="6" y1="17" x2="18" y2="17" />
           </svg>
           <span className="logo-text">Recipe Journal</span>
-        </div>
+        </Link>
         <nav className="nav">
           {/* Palette Selector */}
           <div className="palette-selector" ref={paletteRef}>
@@ -149,14 +151,11 @@ function Header() {
             )}
           </button>
 
-          <a
-            href="https://github.com/shruti/recipe-scaler"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            GitHub
-          </a>
+          <Link href="/favorites" className="nav-link">
+            Favorites
+          </Link>
+
+          <UserMenu />
         </nav>
       </div>
     </header>
