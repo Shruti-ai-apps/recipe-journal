@@ -1,0 +1,90 @@
+/**
+ * Offline Banner styles - Warm Culinary Editorial
+ */
+
+.offline-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  animation: slideUp 0.3s ease-out;
+}
+
+.offline-banner__content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+.offline-banner__icon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.offline-banner__text {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* Offline state */
+.offline-banner--offline {
+  background: var(--color-warning);
+  color: white;
+}
+
+.offline-banner--offline .offline-banner__icon {
+  color: white;
+}
+
+/* Reconnected state */
+.offline-banner--reconnected {
+  background: var(--color-success);
+  color: white;
+  animation: slideUp 0.3s ease-out, fadeOut 0.5s ease-out 2s forwards;
+}
+
+.offline-banner--reconnected .offline-banner__icon {
+  color: white;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+  .offline-banner {
+    padding: var(--spacing-xs) var(--spacing-md);
+  }
+
+  .offline-banner__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .offline-banner__text {
+    font-size: var(--font-size-xs);
+  }
+}
