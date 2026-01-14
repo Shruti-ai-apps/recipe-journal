@@ -8,38 +8,39 @@ import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import SearchBar from '@/components/favorites/SearchBar';
 import FavoritesList from '@/components/favorites/FavoritesList';
-import {
-  SavedRecipe,
-  getAllFavorites,
-  searchFavorites,
-  removeFavorite,
-} from '@/services/favorites';
+import { useFavorites } from '@/contexts/FavoritesContext';
+import { SavedRecipe } from '@/services/favorites';
 import './page.css';
 
 export default function FavoritesPage() {
   const router = useRouter();
+  const {
+    favorites,
+    loading,
+    searchFavorites: searchFavoritesContext,
+    removeFavorite: removeFavoriteContext,
+  } = useFavorites();
+
   const [recipes, setRecipes] = useState<SavedRecipe[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [confirmRemove, setConfirmRemove] = useState<SavedRecipe | null>(null);
 
+  // Update recipes when favorites change
   useEffect(() => {
-    loadFavorites();
-  }, []);
+    if (!loading) {
+      setRecipes(favorites);
+    }
+  }, [favorites, loading]);
 
-  const loadFavorites = () => {
-    const allFavorites = getAllFavorites();
-    setRecipes(allFavorites);
-  };
-
-  const handleSearch = useCallback((query: string) => {
+  const handleSearch = useCallback(async (query: string) => {
     setSearchQuery(query);
     if (query.trim()) {
-      const results = searchFavorites(query);
+      const results = await searchFavoritesContext(query);
       setRecipes(results);
     } else {
-      loadFavorites();
+      setRecipes(favorites);
     }
-  }, []);
+  }, [searchFavoritesContext, favorites]);
 
   const handleSelect = (recipe: SavedRecipe) => {
     // Store recipe in sessionStorage for the home page to pick up
@@ -51,15 +52,14 @@ export default function FavoritesPage() {
     setConfirmRemove(recipe);
   };
 
-  const confirmRemoveRecipe = () => {
-    if (confirmRemove) {
-      removeFavorite(confirmRemove.id!);
+  const confirmRemoveRecipe = async () => {
+    if (confirmRemove && confirmRemove.id) {
+      await removeFavoriteContext(confirmRemove.id);
       setConfirmRemove(null);
-      // Reload the list
+      // Reload search results if searching
       if (searchQuery.trim()) {
-        setRecipes(searchFavorites(searchQuery));
-      } else {
-        loadFavorites();
+        const results = await searchFavoritesContext(searchQuery);
+        setRecipes(results);
       }
     }
   };
@@ -67,6 +67,17 @@ export default function FavoritesPage() {
   const cancelRemove = () => {
     setConfirmRemove(null);
   };
+
+  if (loading) {
+    return (
+      <div className="favorites-page">
+        <div className="favorites-page__header">
+          <h1>My Saved Recipes</h1>
+          <p className="favorites-page__count">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="favorites-page">

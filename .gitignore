@@ -35,3 +35,16 @@ playwright/.cache/
 
 # Local settings
 settings.local.json
+
+# Claude Code temporary files
+tmpclaude-*-cwd
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# Misc
+nul

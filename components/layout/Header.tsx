@@ -8,6 +8,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useTheme, PALETTES } from '@/contexts/ThemeContext';
 import { UserMenu } from '@/components/auth';
+import { SyncStatus } from '@/components/common';
 import './Header.css';
 
 function Header() {
@@ -155,6 +156,7 @@ function Header() {
             Favorites
           </Link>
 
+          <SyncStatus />
           <UserMenu />
         </nav>
       </div>

@@ -1,0 +1,146 @@
+/**
+ * Sync Status styles - Warm Culinary Editorial
+ */
+
+.sync-status {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.sync-status__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sync-status__button:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.sync-status__button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.sync-status__button:disabled {
+  cursor: not-allowed;
+}
+
+.sync-status__icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.3s ease;
+}
+
+/* Syncing animation */
+.sync-status__button--syncing .sync-status__icon {
+  animation: spin 1s linear infinite;
+}
+
+/* Pending indicator */
+.sync-status__button--pending {
+  color: var(--color-warning);
+}
+
+.sync-status__button--pending:hover:not(:disabled) {
+  color: var(--color-warning);
+}
+
+.sync-status__badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: var(--color-warning);
+  color: white;
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  line-height: 16px;
+  text-align: center;
+  border-radius: 8px;
+}
+
+.sync-status__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sync-status__tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background: var(--color-text-primary);
+  color: white;
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-xs);
+  animation: fadeIn 0.2s ease-out;
+  z-index: 100;
+}
+
+.sync-status__tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: var(--color-text-primary);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .sync-status__button {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sync-status__icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sync-status__badge {
+    min-width: 14px;
+    height: 14px;
+    font-size: 9px;
+    line-height: 14px;
+  }
+}
