@@ -88,6 +88,8 @@ export interface NutritionInfo {
 export interface Recipe {
   /** Database ID (for future storage) */
   id?: string;
+  /** User ID (for cloud storage) */
+  userId?: string;
   /** Source information */
   source: RecipeSource;
   /** Recipe title */
@@ -119,4 +121,22 @@ export interface Recipe {
     ingredients: string[];
     instructions: string[];
   };
+  /** Cloud sync fields */
+  createdAt?: string;
+  updatedAt?: string;
+  syncVersion?: number;
+  isDeleted?: boolean;
+}
+
+/**
+ * Cloud-synced recipe with required cloud fields
+ * Used when recipe is stored in Supabase
+ */
+export interface CloudRecipe extends Omit<Recipe, 'id' | 'userId' | 'createdAt' | 'updatedAt' | 'syncVersion' | 'isDeleted'> {
+  id: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+  syncVersion: number;
+  isDeleted: boolean;
 }
