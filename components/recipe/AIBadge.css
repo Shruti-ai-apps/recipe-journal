@@ -1,0 +1,54 @@
+/**
+ * AI Badge Styles - Warm Culinary Editorial
+ */
+
+.ai-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-weight: var(--font-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--radius-sm);
+  cursor: help;
+  flex-shrink: 0;
+}
+
+.ai-badge--small {
+  font-size: 0.5rem;
+  padding: 0.0625rem 0.25rem;
+  margin-left: var(--spacing-xs);
+}
+
+.ai-badge--medium {
+  font-size: 0.625rem;
+  padding: 0.125rem 0.375rem;
+  margin-left: var(--spacing-sm);
+}
+
+/* Hover effect */
+.ai-badge:hover {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+  transform: scale(1.05);
+}
+
+/* Animation on appearance */
+@keyframes badgePop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.ai-badge {
+  animation: badgePop 0.2s ease-out;
+}

@@ -14,7 +14,13 @@ import './Header.css';
 function Header() {
   const { resolvedTheme, toggleTheme, palette, setPalette } = useTheme();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const paletteRef = useRef<HTMLDivElement>(null);
+
+  // Prevent hydration mismatch by only rendering theme-dependent UI after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close palette dropdown when clicking outside
   useEffect(() => {
@@ -59,7 +65,7 @@ function Header() {
             >
               <span
                 className="palette-swatch"
-                style={{ backgroundColor: currentPalette?.color }}
+                style={{ backgroundColor: mounted ? currentPalette?.color : undefined }}
               />
               <svg
                 className={`palette-chevron ${isPaletteOpen ? 'palette-chevron--open' : ''}`}
@@ -110,14 +116,27 @@ function Header() {
             )}
           </div>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle - only render theme-dependent icon after mount to prevent hydration mismatch */}
           <button
             className="theme-toggle"
             onClick={toggleTheme}
             aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
             title={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
           >
-            {resolvedTheme === 'light' ? (
+            {!mounted ? (
+              // Placeholder during SSR - use a neutral icon
+              <svg
+                className="theme-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            ) : resolvedTheme === 'light' ? (
               <svg
                 className="theme-icon theme-icon--moon"
                 viewBox="0 0 24 24"

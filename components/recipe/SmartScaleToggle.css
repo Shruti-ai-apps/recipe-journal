@@ -1,0 +1,137 @@
+/**
+ * Smart Scale Toggle Styles - Warm Culinary Editorial
+ */
+
+.smart-scale-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.smart-scale-label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+}
+
+.smart-scale-label-text {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-family: var(--font-display);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.smart-scale-ai-badge {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-bold);
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.smart-scale-switch {
+  width: 44px;
+  height: 24px;
+  background: var(--color-border);
+  border: none;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.smart-scale-switch:hover:not(:disabled) {
+  background: var(--color-text-muted);
+}
+
+.smart-scale-switch--enabled {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.smart-scale-switch--enabled:hover:not(:disabled) {
+  background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%);
+}
+
+.smart-scale-switch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.smart-scale-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background: var(--color-surface);
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.smart-scale-switch--enabled .smart-scale-slider {
+  transform: translateX(20px);
+}
+
+.smart-scale-spinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.smart-scale-switch--loading .smart-scale-slider {
+  background: var(--color-background-warm);
+}
+
+.smart-scale-hint {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.smart-scale-hint--loading {
+  color: #667eea;
+  font-style: italic;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .smart-scale-toggle {
+    align-items: center;
+  }
+
+  .smart-scale-hint {
+    text-align: center;
+  }
+}
