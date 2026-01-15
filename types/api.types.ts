@@ -3,7 +3,7 @@
  */
 
 import { Recipe } from './recipe.types';
-import { ScaledRecipe, ScalingOptions } from './scaling.types';
+import { ScaledRecipe, ScalingOptions, ScaledIngredient } from './scaling.types';
 
 /**
  * Request to parse a recipe from a URL
@@ -40,6 +40,10 @@ export enum ErrorCode {
 
   // Scaling errors
   INVALID_MULTIPLIER = 'INVALID_MULTIPLIER',
+
+  // AI/LLM errors
+  AI_CONFIG_ERROR = 'AI_CONFIG_ERROR',
+  AI_SCALING_FAILED = 'AI_SCALING_FAILED',
 
   // General errors
   RATE_LIMITED = 'RATE_LIMITED',
@@ -95,6 +99,65 @@ export type ParseRecipeResponse = ApiResponse<Recipe>;
  * Response for scale recipe endpoint
  */
 export type ScaleRecipeResponse = ApiResponse<ScaledRecipe>;
+
+/**
+ * Smart scale response metadata
+ */
+export interface SmartScaleResponseMeta extends ResponseMeta {
+  /** Whether AI scaling was used */
+  aiPowered: boolean;
+  /** Whether result was from cache */
+  cached: boolean;
+}
+
+/**
+ * Ingredient category for smart scaling
+ */
+export type SmartScaleIngredientCategory =
+  | 'linear'
+  | 'discrete'
+  | 'leavening'
+  | 'seasoning'
+  | 'fat'
+  | 'liquid';
+
+/**
+ * Smart scaled ingredient with AI metadata
+ */
+export interface SmartScaledIngredient extends ScaledIngredient {
+  /** Whether AI adjusted this beyond linear scaling */
+  aiAdjusted: boolean;
+  /** Reason for AI adjustment */
+  adjustmentReason?: string;
+  /** Category determined by AI */
+  category: SmartScaleIngredientCategory;
+}
+
+/**
+ * Smart scale response data
+ */
+export interface SmartScaleData {
+  /** Scaled ingredients with AI adjustments */
+  ingredients: SmartScaledIngredient[];
+  /** Cooking tips from AI */
+  tips: string[];
+  /** Cooking time adjustment suggestion */
+  cookingTimeAdjustment?: string;
+  /** Whether AI scaling succeeded */
+  success: boolean;
+  /** Error message if failed */
+  error?: string;
+}
+
+/**
+ * Response for smart scale recipe endpoint
+ */
+export interface SmartScaleRecipeResponse {
+  success: boolean;
+  data?: SmartScaleData;
+  error?: ApiError;
+  meta?: SmartScaleResponseMeta;
+}
 
 /**
  * Health check response
