@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
 import { MigrationBanner } from '@/components/migration';
-import { OfflineBanner } from '@/components/common';
+import { OfflineBanner, InstallPrompt } from '@/components/common';
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -51,6 +51,7 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       </footer>
 
       <OfflineBanner />
+      <InstallPrompt />
     </>
   );
 }
