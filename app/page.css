@@ -102,6 +102,20 @@
   background: linear-gradient(90deg, var(--color-primary), var(--color-accent), var(--color-secondary));
 }
 
+.scaling-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .scaling-controls-row {
+    flex-direction: column;
+  }
+}
+
 .scaling-tips {
   margin-top: var(--spacing-lg);
   padding: var(--spacing-lg);

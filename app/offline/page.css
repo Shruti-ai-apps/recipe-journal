@@ -1,0 +1,125 @@
+/**
+ * Offline page styles - Warm Culinary Editorial
+ */
+
+.offline-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  background: var(--color-background);
+}
+
+.offline-page__content {
+  max-width: 400px;
+  text-align: center;
+}
+
+.offline-page__icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto var(--spacing-lg);
+  color: var(--color-text-muted);
+}
+
+.offline-page__icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.offline-page__title {
+  font-family: var(--font-family-serif);
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.offline-page__message {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--spacing-xl);
+}
+
+.offline-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.offline-page__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.offline-page__button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.offline-page__button--primary {
+  background: var(--color-primary);
+  color: white;
+}
+
+.offline-page__button--primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.offline-page__button--secondary {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.offline-page__button--secondary:hover {
+  background: var(--color-surface-hover);
+}
+
+.offline-page__hint {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .offline-page {
+    padding: var(--spacing-lg);
+  }
+
+  .offline-page__icon {
+    width: 64px;
+    height: 64px;
+  }
+
+  .offline-page__title {
+    font-size: var(--font-size-xl);
+  }
+
+  .offline-page__message {
+    font-size: var(--font-size-sm);
+  }
+
+  .offline-page__button {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+
+  .offline-page__button svg {
+    width: 18px;
+    height: 18px;
+  }
+}

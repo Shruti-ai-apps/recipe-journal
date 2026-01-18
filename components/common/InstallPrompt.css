@@ -1,0 +1,184 @@
+/**
+ * Install Prompt styles - Warm Culinary Editorial
+ */
+
+.install-prompt {
+  position: fixed;
+  bottom: var(--spacing-lg);
+  left: var(--spacing-md);
+  right: var(--spacing-md);
+  z-index: 999;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-border);
+  animation: slideUp 0.3s ease-out;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.install-prompt__content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+}
+
+.install-prompt__icon-wrapper {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.install-prompt__icon {
+  width: 24px;
+  height: 24px;
+  color: white;
+}
+
+.install-prompt__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+  min-width: 0;
+}
+
+.install-prompt__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.install-prompt__description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.install-prompt__share-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin: 0 2px;
+}
+
+.install-prompt__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+}
+
+.install-prompt__button {
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.install-prompt__button--install {
+  background: var(--color-primary);
+  color: white;
+}
+
+.install-prompt__button--install:hover {
+  background: var(--color-primary-dark);
+}
+
+.install-prompt__dismiss {
+  width: 32px;
+  height: 32px;
+  padding: var(--spacing-xs);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.install-prompt__dismiss:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-secondary);
+}
+
+.install-prompt__dismiss svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* iOS-specific styles */
+.install-prompt--ios .install-prompt__content {
+  padding: var(--spacing-sm) var(--spacing-md);
+}
+
+.install-prompt--ios .install-prompt__icon-wrapper {
+  width: 36px;
+  height: 36px;
+}
+
+.install-prompt--ios .install-prompt__icon {
+  width: 20px;
+  height: 20px;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .install-prompt {
+    left: var(--spacing-sm);
+    right: var(--spacing-sm);
+    bottom: var(--spacing-md);
+  }
+
+  .install-prompt__content {
+    padding: var(--spacing-sm);
+    gap: var(--spacing-sm);
+  }
+
+  .install-prompt__icon-wrapper {
+    width: 40px;
+    height: 40px;
+  }
+
+  .install-prompt__icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .install-prompt__title {
+    font-size: var(--font-size-sm);
+  }
+
+  .install-prompt__description {
+    font-size: var(--font-size-xs);
+  }
+
+  .install-prompt__button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: var(--font-size-xs);
+  }
+}

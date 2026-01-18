@@ -7,6 +7,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ReactNode } from 'react';
+import { MigrationBanner } from '@/components/migration';
+import { OfflineBanner, InstallPrompt } from '@/components/common';
 
 interface ClientLayoutProps {
   children: ReactNode;
@@ -40,12 +42,16 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
       </nav>
 
       <main className="main-content">
+        <MigrationBanner />
         {children}
       </main>
 
       <footer className="footer">
         <p>Recipe Journal - Import, scale, and save your favorite recipes</p>
       </footer>
+
+      <OfflineBanner />
+      <InstallPrompt />
     </>
   );
 }

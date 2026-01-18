@@ -1,17 +1,26 @@
 'use client';
 
 /**
- * Header component with theme toggle and palette selector
+ * Header component with theme toggle, palette selector, and user menu
  */
 
 import { useState, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useTheme, PALETTES } from '@/contexts/ThemeContext';
+import { UserMenu } from '@/components/auth';
+import { SyncStatus } from '@/components/common';
 import './Header.css';
 
 function Header() {
   const { resolvedTheme, toggleTheme, palette, setPalette } = useTheme();
   const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const paletteRef = useRef<HTMLDivElement>(null);
+
+  // Prevent hydration mismatch by only rendering theme-dependent UI after mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close palette dropdown when clicking outside
   useEffect(() => {
@@ -30,7 +39,7 @@ function Header() {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">
+        <Link href="/" className="logo">
           <svg
             className="logo-icon"
             viewBox="0 0 24 24"
@@ -44,7 +53,7 @@ function Header() {
             <line x1="6" y1="17" x2="18" y2="17" />
           </svg>
           <span className="logo-text">Recipe Journal</span>
-        </div>
+        </Link>
         <nav className="nav">
           {/* Palette Selector */}
           <div className="palette-selector" ref={paletteRef}>
@@ -56,7 +65,7 @@ function Header() {
             >
               <span
                 className="palette-swatch"
-                style={{ backgroundColor: currentPalette?.color }}
+                style={{ backgroundColor: mounted ? currentPalette?.color : undefined }}
               />
               <svg
                 className={`palette-chevron ${isPaletteOpen ? 'palette-chevron--open' : ''}`}
@@ -107,14 +116,27 @@ function Header() {
             )}
           </div>
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle - only render theme-dependent icon after mount to prevent hydration mismatch */}
           <button
             className="theme-toggle"
             onClick={toggleTheme}
             aria-label={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
             title={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
           >
-            {resolvedTheme === 'light' ? (
+            {!mounted ? (
+              // Placeholder during SSR - use a neutral icon
+              <svg
+                className="theme-icon"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="12" cy="12" r="4" />
+              </svg>
+            ) : resolvedTheme === 'light' ? (
               <svg
                 className="theme-icon theme-icon--moon"
                 viewBox="0 0 24 24"
@@ -149,14 +171,12 @@ function Header() {
             )}
           </button>
 
-          <a
-            href="https://github.com/shruti/recipe-scaler"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="nav-link"
-          >
-            GitHub
-          </a>
+          <Link href="/favorites" className="nav-link">
+            Favorites
+          </Link>
+
+          <SyncStatus />
+          <UserMenu />
         </nav>
       </div>
     </header>

@@ -30,3 +30,22 @@ coverage/
 
 # Local settings
 settings.local.json
+
+# Claude Code temporary files
+tmpclaude-*-cwd
+
+# Test artifacts
+playwright-report/
+test-results/
+
+# TypeScript build info
+tsconfig.tsbuildinfo
+
+# PWA generated files
+public/sw.js
+public/sw.js.map
+public/workbox-*.js
+public/workbox-*.js.map
+
+# Misc
+nul
