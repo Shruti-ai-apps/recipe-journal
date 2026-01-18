@@ -220,8 +220,8 @@ test.describe('User Flow: Complete Journey', () => {
     await setupPage(page, '/');
     await expect(page).toHaveURL('/');
 
-    // Navigate to favorites
-    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    // Navigate to favorites (use header link to avoid multiple matches)
+    const favoritesLink = page.getByRole('banner').getByRole('link', { name: /favorites/i });
     await waitForNavigation(page, () => favoritesLink.click());
     await expect(page).toHaveURL('/favorites');
 
@@ -246,8 +246,8 @@ test.describe('User Flow: Complete Journey', () => {
 
     const initialTheme = await html.getAttribute('data-theme');
 
-    // Navigate to favorites
-    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    // Navigate to favorites (use header link to avoid multiple matches)
+    const favoritesLink = page.getByRole('banner').getByRole('link', { name: /favorites/i });
     await waitForNavigation(page, () => favoritesLink.click());
     await expect(page).toHaveURL('/favorites');
 

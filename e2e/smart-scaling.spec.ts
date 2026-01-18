@@ -22,10 +22,11 @@ const mockSmartScaleResponse = {
         id: '1',
         original: '2 cups all-purpose flour',
         displayText: '4 cups all-purpose flour',
-        quantity: 4,
+        quantity: 2,
         unit: 'cups',
         name: 'all-purpose flour',
-        scaledQuantity: 4,
+        scaledQuantity: { value: 4, displayValue: '4', wasRounded: false, originalValue: 2 },
+        scaledUnit: 'cups',
         parseConfidence: 0.95,
         aiAdjusted: false,
         category: 'linear' as const,
@@ -34,10 +35,11 @@ const mockSmartScaleResponse = {
         id: '2',
         original: '2 eggs',
         displayText: '4 eggs',
-        quantity: 4,
+        quantity: 2,
         unit: '',
         name: 'eggs',
-        scaledQuantity: 4,
+        scaledQuantity: { value: 4, displayValue: '4', wasRounded: false, originalValue: 2 },
+        scaledUnit: '',
         parseConfidence: 0.98,
         aiAdjusted: true,
         adjustmentReason: 'Rounded to whole number for discrete ingredient',
@@ -47,10 +49,11 @@ const mockSmartScaleResponse = {
         id: '3',
         original: '1 tsp baking powder',
         displayText: '1.5 tsp baking powder',
-        quantity: 1.5,
+        quantity: 1,
         unit: 'tsp',
         name: 'baking powder',
-        scaledQuantity: 1.5,
+        scaledQuantity: { value: 1.5, displayValue: '1.5', wasRounded: false, originalValue: 1 },
+        scaledUnit: 'tsp',
         parseConfidence: 0.92,
         aiAdjusted: true,
         adjustmentReason: 'Reduced to 75% for large batch - leavening agents become more potent',
@@ -60,10 +63,11 @@ const mockSmartScaleResponse = {
         id: '4',
         original: '1 tsp salt',
         displayText: '1.5 tsp salt',
-        quantity: 1.5,
+        quantity: 1,
         unit: 'tsp',
         name: 'salt',
-        scaledQuantity: 1.5,
+        scaledQuantity: { value: 1.5, displayValue: '1.5', wasRounded: false, originalValue: 1 },
+        scaledUnit: 'tsp',
         parseConfidence: 0.95,
         aiAdjusted: true,
         adjustmentReason: 'Scaled conservatively - seasonings intensify in larger batches',
@@ -94,10 +98,11 @@ const mockSmartScaleResponse3x = {
         id: '1',
         original: '2 cups all-purpose flour',
         displayText: '6 cups all-purpose flour',
-        quantity: 6,
+        quantity: 2,
         unit: 'cups',
         name: 'all-purpose flour',
-        scaledQuantity: 6,
+        scaledQuantity: { value: 6, displayValue: '6', wasRounded: false, originalValue: 2 },
+        scaledUnit: 'cups',
         parseConfidence: 0.95,
         aiAdjusted: false,
         category: 'linear' as const,
@@ -106,10 +111,11 @@ const mockSmartScaleResponse3x = {
         id: '2',
         original: '2 eggs',
         displayText: '6 eggs',
-        quantity: 6,
+        quantity: 2,
         unit: '',
         name: 'eggs',
-        scaledQuantity: 6,
+        scaledQuantity: { value: 6, displayValue: '6', wasRounded: false, originalValue: 2 },
+        scaledUnit: '',
         parseConfidence: 0.98,
         aiAdjusted: true,
         adjustmentReason: 'Rounded to whole number for discrete ingredient',
@@ -119,10 +125,11 @@ const mockSmartScaleResponse3x = {
         id: '3',
         original: '1 tsp baking powder',
         displayText: '2 tsp baking powder',
-        quantity: 2,
+        quantity: 1,
         unit: 'tsp',
         name: 'baking powder',
-        scaledQuantity: 2,
+        scaledQuantity: { value: 2, displayValue: '2', wasRounded: false, originalValue: 1 },
+        scaledUnit: 'tsp',
         parseConfidence: 0.92,
         aiAdjusted: true,
         adjustmentReason: 'Significantly reduced for 3x batch - leavening becomes much more potent',
@@ -132,10 +139,11 @@ const mockSmartScaleResponse3x = {
         id: '4',
         original: '1 tsp salt',
         displayText: '2 tsp salt',
-        quantity: 2,
+        quantity: 1,
         unit: 'tsp',
         name: 'salt',
-        scaledQuantity: 2,
+        scaledQuantity: { value: 2, displayValue: '2', wasRounded: false, originalValue: 1 },
+        scaledUnit: 'tsp',
         parseConfidence: 0.95,
         aiAdjusted: true,
         adjustmentReason: 'Reduced to 67% - seasonings intensify significantly in large batches',
@@ -166,10 +174,11 @@ const mockSmartScaleErrorResponse = {
         id: '1',
         original: '2 cups flour',
         displayText: '4 cups flour',
-        quantity: 4,
+        quantity: 2,
         unit: 'cups',
         name: 'flour',
-        scaledQuantity: 4,
+        scaledQuantity: { value: 4, displayValue: '4', wasRounded: false, originalValue: 2 },
+        scaledUnit: 'cups',
         parseConfidence: 0.95,
         aiAdjusted: false,
         category: 'linear' as const,
@@ -530,6 +539,12 @@ test.describe('Smart Scaling: AI Badges and Adjustments', () => {
     // Now enable smart scale
     const smartScaleToggle = page.getByRole('switch', { name: /toggle smart scaling/i });
     await smartScaleToggle.click();
+
+    // Wait for smart scale API call and UI update
+    await page.waitForResponse(
+      (response) =>
+        response.url().includes('/api/recipes/scale-smart') && response.status() === 200
+    );
     await waitForPageReady(page);
 
     // AI badges should appear on adjusted ingredients
@@ -542,11 +557,11 @@ test.describe('Smart Scaling: AI Badges and Adjustments', () => {
     const itemCount = await ingredientItems.count();
     expect(itemCount).toBeGreaterThan(0);
 
-    // Verify at least one ingredient shows AI badge using aria-label
-    // AIBadge component uses aria-label for the reason text
-    const aiText = page.getByLabel(/Rounded|Reduced|Scaled/i);
-    const aiTextCount = await aiText.count();
-    expect(aiTextCount).toBeGreaterThanOrEqual(1);
+    // Wait for and verify at least one ingredient shows AI badge
+    const aiBadges = page.locator('.ingredient-list .ai-badge');
+    await expect(aiBadges.first()).toBeVisible({ timeout: 5000 });
+    const aiBadgeCount = await aiBadges.count();
+    expect(aiBadgeCount).toBeGreaterThanOrEqual(1);
   });
 
   test('should not display AI badges when smart scale is disabled', async ({ page }) => {

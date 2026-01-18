@@ -39,11 +39,11 @@ test.describe('Offline Banner', () => {
 
     // Come back online
     await context.setOffline(false);
-    await waitForPageReady(page);
 
-    // Should show reconnected message
+    // Should show reconnected message - check quickly before CSS fadeOut animation (2s delay + 0.5s duration)
+    // Use a shorter timeout to catch the banner before it fades
     const reconnectedBanner = page.locator('.offline-banner--reconnected');
-    await expect(reconnectedBanner).toBeVisible();
+    await expect(reconnectedBanner).toBeVisible({ timeout: 2000 });
 
     const bannerText = page.locator('.offline-banner__text');
     await expect(bannerText).toContainText('Back online');

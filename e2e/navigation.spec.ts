@@ -9,8 +9,8 @@ test.describe('Navigation', () => {
   test('should navigate from home to favorites', async ({ page }) => {
     await setupPage(page, '/');
 
-    // Find and click favorites link with navigation wait
-    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    // Find and click favorites link in header (there are multiple favorites links)
+    const favoritesLink = page.getByRole('banner').getByRole('link', { name: /favorites/i });
     await waitForNavigation(page, () => favoritesLink.click());
 
     await expect(page).toHaveURL('/favorites');
@@ -35,8 +35,8 @@ test.describe('Navigation', () => {
   test('should highlight active navigation item', async ({ page }) => {
     await setupPage(page, '/favorites');
 
-    // The favorites nav item should have active styling
-    const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    // The favorites nav item should have active styling (check header link)
+    const favoritesLink = page.getByRole('banner').getByRole('link', { name: /favorites/i });
     await expect(favoritesLink).toBeVisible();
   });
 });
