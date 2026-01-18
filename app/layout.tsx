@@ -10,6 +10,30 @@ import './layout.css';
 export const metadata: Metadata = {
   title: 'Recipe Journal',
   description: 'Import, scale, and save your favorite recipes',
+  manifest: '/manifest.json',
+  themeColor: '#E07A5F',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Recipe Journal',
+  },
+  formatDetection: {
+    telephone: false,
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/icon-152x152.png', sizes: '152x152', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
