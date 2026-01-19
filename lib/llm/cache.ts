@@ -5,7 +5,8 @@
  * Uses localStorage for guest users with 24-hour TTL.
  */
 
-import { SmartScaleResponse, CachedScaleResult } from './types';
+import type { SmartScaleData } from '@/types';
+import { CachedScaleResult } from './types';
 
 /** Cache duration: 24 hours */
 const CACHE_DURATION_MS = 24 * 60 * 60 * 1000;
@@ -26,7 +27,7 @@ function getCacheKey(recipeId: string, multiplier: number): string {
 export function getCachedResult(
   recipeId: string,
   multiplier: number
-): SmartScaleResponse | null {
+): SmartScaleData | null {
   // Only works in browser
   if (typeof window === 'undefined') {
     return null;
@@ -62,7 +63,7 @@ export function getCachedResult(
 export function setCachedResult(
   recipeId: string,
   multiplier: number,
-  result: SmartScaleResponse
+  result: SmartScaleData
 ): void {
   // Only works in browser
   if (typeof window === 'undefined') {

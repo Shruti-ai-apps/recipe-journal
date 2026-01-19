@@ -35,7 +35,7 @@ describe('SmartScaleToggle', () => {
       render(<SmartScaleToggle {...defaultProps} enabled={true} />);
 
       expect(
-        screen.getByText(/AI will intelligently adjust eggs, spices, and leavening/)
+        screen.getByText(/AI adds guidance for eggs, spices, and leavening/)
       ).toBeInTheDocument();
     });
 
@@ -43,7 +43,7 @@ describe('SmartScaleToggle', () => {
       render(<SmartScaleToggle {...defaultProps} enabled={false} />);
 
       expect(
-        screen.queryByText(/AI will intelligently adjust/)
+        screen.queryByText(/AI adds guidance/)
       ).not.toBeInTheDocument();
     });
   });

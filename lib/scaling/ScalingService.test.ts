@@ -186,6 +186,68 @@ describe('ScalingService', () => {
     });
   });
 
+  describe('range quantities', () => {
+    it('scales range quantities and preserves range display', async () => {
+      const recipe = createMockRecipe({
+        ingredients: [
+          createMockIngredient({
+            original: '1-2 tbsp honey',
+            quantity: { type: 'range', value: 1, valueTo: 2, displayValue: '1-2' },
+            unit: 'tablespoon',
+            ingredient: 'honey',
+          }),
+        ],
+      });
+
+      const result = await service.scaleRecipe(recipe, { multiplier: 2 });
+      const ing = result.scaledIngredients[0];
+
+      expect(ing.scaledQuantity?.value).toBe(2);
+      expect(ing.scaledQuantity?.valueTo).toBe(4);
+      expect(ing.scaledQuantity?.displayValue).toBe('2–4');
+      expect(ing.displayText).toContain('tablespoons');
+    });
+
+    it('uses friendly fractions for range endpoints', async () => {
+      const recipe = createMockRecipe({
+        ingredients: [
+          createMockIngredient({
+            original: '1-2 tbsp honey',
+            quantity: { type: 'range', value: 1, valueTo: 2, displayValue: '1-2' },
+            unit: 'tablespoon',
+            ingredient: 'honey',
+          }),
+        ],
+      });
+
+      const result = await service.scaleRecipe(recipe, { multiplier: 0.5 });
+      const ing = result.scaledIngredients[0];
+
+      expect(ing.scaledQuantity?.displayValue).toBe('1/2–1');
+    });
+  });
+
+  describe('tiny amounts', () => {
+    it('does not append units when displaying pinch/to taste', async () => {
+      const recipe = createMockRecipe({
+        ingredients: [
+          createMockIngredient({
+            original: '0.02 tsp salt',
+            quantity: { type: 'single', value: 0.02, displayValue: '0.02' },
+            unit: 'teaspoon',
+            ingredient: 'salt',
+          }),
+        ],
+      });
+
+      const result = await service.scaleRecipe(recipe, { multiplier: 1 });
+      const ing = result.scaledIngredients[0];
+
+      expect(ing.scaledQuantity?.displayValue).toBe('a pinch');
+      expect(ing.displayText).not.toContain('teaspoon');
+    });
+  });
+
   describe('unit conversion', () => {
     it('converts US units to metric when requested', async () => {
       const recipe = createMockRecipe({
@@ -239,6 +301,25 @@ describe('ScalingService', () => {
       });
 
       expect(result.scaledIngredients[0].scaledUnit).toBe('cup');
+    });
+
+    it('converts fluid ounces to milliliters when requested', async () => {
+      const recipe = createMockRecipe({
+        ingredients: [
+          createMockIngredient({
+            quantity: { type: 'single', value: 2, displayValue: '2' },
+            unit: 'fluidOunce',
+            ingredient: 'lime juice',
+          }),
+        ],
+      });
+
+      const result = await service.scaleRecipe(recipe, {
+        multiplier: 1,
+        targetUnitSystem: UnitSystem.METRIC,
+      });
+
+      expect(result.scaledIngredients[0].scaledUnit).toBe('milliliter');
     });
   });
 

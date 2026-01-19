@@ -36,13 +36,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate multiplier
-    if (!options.multiplier || options.multiplier <= 0 || options.multiplier > 10) {
+    if (typeof options.multiplier !== 'number' || options.multiplier < 0.1 || options.multiplier > 10) {
       return NextResponse.json<ScaleRecipeResponse>(
         {
           success: false,
           error: {
             code: ErrorCode.INVALID_MULTIPLIER,
-            message: 'Multiplier must be between 0 and 10',
+            message: 'Multiplier must be between 0.1 and 10',
           },
           meta: {
             requestId,

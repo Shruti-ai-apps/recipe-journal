@@ -16,11 +16,13 @@ export class CacheService {
   private cache: Map<string, CacheEntry<unknown>> = new Map();
   private readonly ttlMs: number;
   private readonly enabled: boolean;
+  private readonly maxEntries: number;
   private cleanupInterval: ReturnType<typeof setInterval> | null = null;
 
-  constructor(ttlMs: number = DEFAULT_TTL_MS, enabled: boolean = true) {
+  constructor(ttlMs: number = DEFAULT_TTL_MS, enabled: boolean = true, maxEntries: number = 5000) {
     this.ttlMs = ttlMs;
     this.enabled = enabled;
+    this.maxEntries = Math.max(0, maxEntries);
 
     // Start cleanup interval
     if (this.enabled && typeof window === 'undefined') {
@@ -54,6 +56,16 @@ export class CacheService {
 
     const expiresAt = Date.now() + (ttlMs || this.ttlMs);
     this.cache.set(key, { value, expiresAt });
+
+    // Evict oldest entries to bound memory usage
+    if (this.maxEntries > 0) {
+      while (this.cache.size > this.maxEntries) {
+        const oldestKey = this.cache.keys().next().value as string | undefined;
+        if (!oldestKey) break;
+        this.cache.delete(oldestKey);
+      }
+    }
+
     logger.debug('Cached value', { key, expiresIn: `${(ttlMs || this.ttlMs) / 1000}s` });
   }
 

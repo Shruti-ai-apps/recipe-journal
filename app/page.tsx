@@ -4,7 +4,7 @@
  * Home page - URL input and recipe display
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Recipe, ScaledRecipe, ScalingOptions } from '@/types';
 import UrlInput from '@/components/recipe/UrlInput';
@@ -45,10 +45,25 @@ export default function HomePage() {
   const [cookingTimeAdjustment, setCookingTimeAdjustment] = useState<string | undefined>(undefined);
   const [isAIPowered, setIsAIPowered] = useState(false);
 
+  // Guards against async smart-scale responses updating state for a different recipe.
+  const smartScaleRequestTokenRef = useRef(0);
+  const activeRecipeUrlRef = useRef<string | null>(null);
+
   // Load recent favorites on mount
   useEffect(() => {
     loadRecentFavorites();
   }, []);
+
+  const resetSmartScaleState = (tips: string[] = []) => {
+    // Invalidate any in-flight smart scale requests so late responses are ignored
+    smartScaleRequestTokenRef.current += 1;
+
+    setSmartScaleLoading(false);
+    setSmartScaledIngredients(null);
+    setScalingTips(tips);
+    setCookingTimeAdjustment(undefined);
+    setIsAIPowered(false);
+  };
 
   const loadRecentFavorites = () => {
     const recent = getRecentFavorites(4);
@@ -56,15 +71,18 @@ export default function HomePage() {
   };
 
   const loadSavedRecipe = async (savedRecipe: SavedRecipe) => {
+    activeRecipeUrlRef.current = savedRecipe.source.url;
     setRecipe(savedRecipe);
     setLoading(true);
     setError(null);
+    resetSmartScaleState([]);
 
     try {
       const initialMultiplier = savedRecipe.lastScaledMultiplier || 1;
       setMultiplier(initialMultiplier);
       const scaled = await scaleRecipe(savedRecipe, { multiplier: initialMultiplier });
       setScaledRecipe(scaled);
+      setScalingTips(scaled.scalingTips || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to scale recipe');
     } finally {
@@ -78,14 +96,18 @@ export default function HomePage() {
     setRecipe(null);
     setScaledRecipe(null);
     setMultiplier(1);
+    activeRecipeUrlRef.current = null;
+    resetSmartScaleState([]);
 
     try {
       const parsedRecipe = await parseRecipe(url);
+      activeRecipeUrlRef.current = parsedRecipe.source.url;
       setRecipe(parsedRecipe);
 
       // Apply initial scaling (1x)
       const scaled = await scaleRecipe(parsedRecipe, { multiplier: 1 });
       setScaledRecipe(scaled);
+      setScalingTips(scaled.scalingTips || []);
 
       // Refresh recent favorites
       loadRecentFavorites();
@@ -110,9 +132,22 @@ export default function HomePage() {
 
       // If smart scaling is enabled, also get AI-powered scaling
       if (smartScaleEnabled) {
+        const requestToken = smartScaleRequestTokenRef.current + 1;
+        smartScaleRequestTokenRef.current = requestToken;
+        const recipeUrlAtRequest = recipe.source.url;
+
         setSmartScaleLoading(true);
         try {
           const smartResult = await smartScaleRecipe(recipe, newMultiplier, recipe.id);
+
+          // Ignore late responses for a previous recipe or superseded request.
+          if (
+            smartScaleRequestTokenRef.current !== requestToken ||
+            activeRecipeUrlRef.current !== recipeUrlAtRequest
+          ) {
+            return;
+          }
+
           setSmartScaledIngredients(smartResult.ingredients);
           setScalingTips(smartResult.tips);
           setCookingTimeAdjustment(smartResult.cookingTimeAdjustment);
@@ -120,12 +155,25 @@ export default function HomePage() {
         } catch (smartErr) {
           // Fallback to regular scaling - don't show error since regular scaling worked
           console.warn('Smart scaling failed, using regular scaling:', smartErr);
+
+          if (
+            smartScaleRequestTokenRef.current !== requestToken ||
+            activeRecipeUrlRef.current !== recipeUrlAtRequest
+          ) {
+            return;
+          }
+
           setSmartScaledIngredients(null);
           setScalingTips(scaled.scalingTips || []);
           setCookingTimeAdjustment(undefined);
           setIsAIPowered(false);
         } finally {
-          setSmartScaleLoading(false);
+          if (
+            smartScaleRequestTokenRef.current === requestToken &&
+            activeRecipeUrlRef.current === recipeUrlAtRequest
+          ) {
+            setSmartScaleLoading(false);
+          }
         }
       } else {
         // Clear smart scaling data when disabled
@@ -146,19 +194,44 @@ export default function HomePage() {
 
     // If enabling and we have a recipe with non-1x multiplier, fetch smart scaling
     if (enabled && recipe && multiplier !== 1) {
+      const requestToken = smartScaleRequestTokenRef.current + 1;
+      smartScaleRequestTokenRef.current = requestToken;
+      const recipeUrlAtRequest = recipe.source.url;
+
       setSmartScaleLoading(true);
       try {
         const smartResult = await smartScaleRecipe(recipe, multiplier, recipe.id);
+
+        if (
+          smartScaleRequestTokenRef.current !== requestToken ||
+          activeRecipeUrlRef.current !== recipeUrlAtRequest
+        ) {
+          return;
+        }
+
         setSmartScaledIngredients(smartResult.ingredients);
         setScalingTips(smartResult.tips);
         setCookingTimeAdjustment(smartResult.cookingTimeAdjustment);
         setIsAIPowered(smartResult.success);
       } catch (err) {
         console.warn('Smart scaling failed:', err);
+
+        if (
+          smartScaleRequestTokenRef.current !== requestToken ||
+          activeRecipeUrlRef.current !== recipeUrlAtRequest
+        ) {
+          return;
+        }
+
         setSmartScaledIngredients(null);
         setIsAIPowered(false);
       } finally {
-        setSmartScaleLoading(false);
+        if (
+          smartScaleRequestTokenRef.current === requestToken &&
+          activeRecipeUrlRef.current === recipeUrlAtRequest
+        ) {
+          setSmartScaleLoading(false);
+        }
       }
     } else if (!enabled) {
       // Clear smart scaling data when disabling

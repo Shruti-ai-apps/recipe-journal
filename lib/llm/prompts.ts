@@ -22,7 +22,8 @@ export function buildScalingPrompt(
   originalServings?: number
 ): string {
   const ingredientsList = ingredients
-    .map((ing, i) => `${i + 1}. ${ing.original}`)
+    // Use 0-based indices to match the required JSON "index" field
+    .map((ing, i) => `${i}. ${ing.original}`)
     .join('\n');
 
   const servingsInfo = originalServings
@@ -31,16 +32,13 @@ export function buildScalingPrompt(
 
   return `Scale this recipe by ${multiplier}x${servingsInfo}.
 
-## Ingredients to Scale:
+## Ingredients:
 ${ingredientsList}
 
-## Scaling Rules:
-1. **Discrete items** (eggs, lemons, avocados, bananas): Round to nearest whole number. Never use fractions of eggs.
-2. **Leavening agents** (baking powder, baking soda, yeast): Scale at 75% for multipliers > 2x to prevent over-rising.
-3. **Seasonings & spices** (salt, pepper, cumin, chili, cinnamon): Scale at 80% for multipliers > 2x - can always add more to taste.
-4. **Fats** (butter, oil, ghee): Scale linearly but note if amount seems excessive for large batches.
-5. **Liquids** (water, broth, milk): Scale linearly but may need 5-10% reduction for 3x+ batches.
-6. **Everything else** (flour, sugar, vegetables): Scale linearly by the exact multiplier.
+## Task:
+- Identify ingredients that need special handling when scaling (e.g., eggs/discrete items, leavening, seasonings).
+- Provide practical guidance and 1-3 concise tips for this scale.
+- Do NOT output scaled quantities or rewritten ingredient strings. Quantities and display formatting are handled deterministically by the app.
 
 ## Output Format:
 Respond with ONLY this JSON structure (no markdown, no backticks, no extra text):
@@ -48,33 +46,26 @@ Respond with ONLY this JSON structure (no markdown, no backticks, no extra text)
   "ingredients": [
     {
       "index": 0,
-      "originalText": "2 large eggs",
-      "scaledQuantity": 4,
-      "scaledUnit": "",
-      "displayText": "4 large eggs",
       "aiAdjusted": true,
-      "adjustmentReason": "Rounded to whole eggs",
+      "adjustmentReason": "Practical guidance for fractional eggs (beat and use portion)",
       "category": "discrete"
     }
   ],
   "tips": [
-    "When doubling eggs, beat them together before adding to ensure even distribution"
+    "If eggs scale to a fraction, beat the egg and measure out the needed portion."
   ],
-  "cookingTimeAdjustment": "Increase baking time by 10-15 minutes for doubled batch"
+  "cookingTimeAdjustment": "Optional: adjust bake time when scaling up"
 }
 
 Rules for the JSON:
 - "index" must match the ingredient number (0-indexed)
-- "scaledQuantity" is the numeric value after scaling
-- "scaledUnit" is the unit (empty string if none, like for eggs)
-- "displayText" is the human-readable scaled ingredient text
-- "aiAdjusted" is true if you modified beyond simple multiplication
-- "adjustmentReason" explains why (only if aiAdjusted is true)
+- "aiAdjusted" is true only when special handling or practical guidance is needed
+- "adjustmentReason" is required when aiAdjusted is true
 - "category" is one of: linear, discrete, leavening, seasoning, fat, liquid
-- "tips" array should have 1-3 practical cooking tips for this scale
-- "cookingTimeAdjustment" is optional, include only if relevant
+- "tips" should have 1-3 practical tips for this scale (empty array allowed)
+- "cookingTimeAdjustment" is optional; omit when not relevant
 
-Scale each ingredient now:`;
+Return JSON now:`;
 }
 
 /**
@@ -89,14 +80,14 @@ export function buildSimpleScalingPrompt(
     .map((ing, i) => `${i}. ${ing.original}`)
     .join('\n');
 
-  return `Scale by ${multiplier}x. Focus only on discrete items (eggs) that need rounding.
+  return `Scale by ${multiplier}x. Focus only on ingredients that need special handling (e.g., eggs/discrete items).
 
 Ingredients:
 ${ingredientsList}
 
 Respond with JSON only:
 {
-  "ingredients": [{"index": 0, "scaledQuantity": 2, "scaledUnit": "", "displayText": "2 eggs", "aiAdjusted": false, "category": "discrete"}],
+  "ingredients": [{"index": 0, "aiAdjusted": false, "category": "discrete"}],
   "tips": []
 }`;
 }

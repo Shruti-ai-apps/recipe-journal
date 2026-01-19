@@ -2,28 +2,53 @@
  * POST /api/recipes/scale-smart
  *
  * AI-powered recipe scaling using Gemini 2.5 Flash-Lite
- * Intelligently handles eggs, leavening, spices, and other special ingredients
+ * Provides advisory metadata and practical tips for tricky ingredients (eggs, leavening, spices, etc.)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuidv4 } from 'uuid';
 import { smartScaleIngredients, isGeminiConfigured, SmartScaleRequest } from '@/lib/llm';
-import { ErrorCode, SmartScaleRecipeResponse, SmartScaledIngredient, Recipe } from '@/types';
+import { CacheService } from '@/lib/cache';
+import { ErrorCode, SmartScaleRecipeResponse, Recipe } from '@/types';
+import { createHash } from 'crypto';
 
-/**
- * Simple in-memory rate limiting
- * In production, use Redis or similar
- */
-const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
-const RATE_LIMIT = 10; // requests per minute
+export const runtime = 'nodejs';
+
+const RATE_LIMIT = 10; // requests per minute per identifier
 const RATE_WINDOW_MS = 60 * 1000; // 1 minute
+const RATE_LIMIT_MAX_ENTRIES = 10000;
+
+const SMART_SCALE_CACHE_TTL_MS = Number.parseInt(process.env.SMART_SCALE_CACHE_TTL_MS || '', 10) || 24 * 60 * 60 * 1000;
+const SMART_SCALE_CACHE_MAX_ENTRIES = Number.parseInt(process.env.SMART_SCALE_CACHE_MAX_ENTRIES || '', 10) || 2000;
+
+type RateLimitRecord = { count: number; resetAt: number; lastSeenAt: number };
+const rateLimitMap = new Map<string, RateLimitRecord>();
+
+const smartScaleCache = new CacheService(SMART_SCALE_CACHE_TTL_MS, true, SMART_SCALE_CACHE_MAX_ENTRIES);
+const inFlightSmartScaleRequests = new Map<string, ReturnType<typeof smartScaleIngredients>>();
+
+function cleanupRateLimitMap(now: number) {
+  for (const [key, record] of rateLimitMap.entries()) {
+    if (now > record.resetAt) {
+      rateLimitMap.delete(key);
+    }
+  }
+
+  while (rateLimitMap.size > RATE_LIMIT_MAX_ENTRIES) {
+    const oldestKey = rateLimitMap.keys().next().value as string | undefined;
+    if (!oldestKey) break;
+    rateLimitMap.delete(oldestKey);
+  }
+}
 
 function checkRateLimit(identifier: string): boolean {
   const now = Date.now();
+
+  cleanupRateLimitMap(now);
   const record = rateLimitMap.get(identifier);
 
   if (!record || now > record.resetAt) {
-    rateLimitMap.set(identifier, { count: 1, resetAt: now + RATE_WINDOW_MS });
+    rateLimitMap.set(identifier, { count: 1, resetAt: now + RATE_WINDOW_MS, lastSeenAt: now });
     return true;
   }
 
@@ -32,6 +57,10 @@ function checkRateLimit(identifier: string): boolean {
   }
 
   record.count++;
+  record.lastSeenAt = now;
+  // Refresh insertion order so oldest eviction approximates LRU
+  rateLimitMap.delete(identifier);
+  rateLimitMap.set(identifier, record);
   return true;
 }
 
@@ -41,6 +70,24 @@ function getClientIdentifier(request: NextRequest): string {
     request.headers.get('x-real-ip') ||
     'anonymous'
   );
+}
+
+function getSmartScaleCacheKey(recipe: Recipe, multiplier: number): string {
+  const keyPayload = {
+    multiplier,
+    originalServings: recipe.servings?.amount,
+    ingredients: recipe.ingredients.map((ing) => ({
+      original: ing.original,
+      quantity: ing.quantity,
+      unit: ing.unit,
+      ingredient: ing.ingredient,
+      preparation: ing.preparation,
+      notes: ing.notes,
+    })),
+  };
+
+  const digest = createHash('sha256').update(JSON.stringify(keyPayload)).digest('hex');
+  return `smart-scale:v1:${digest}`;
 }
 
 export async function POST(request: NextRequest) {
@@ -66,26 +113,6 @@ export async function POST(request: NextRequest) {
           },
         },
         { status: 429 }
-      );
-    }
-
-    // Check if Gemini is configured
-    if (!isGeminiConfigured()) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
-        {
-          success: false,
-          error: {
-            code: ErrorCode.AI_CONFIG_ERROR,
-            message: 'AI scaling is not configured. Please set GEMINI_API_KEY.',
-          },
-          meta: {
-            requestId,
-            processingTime: Date.now() - startTime,
-            aiPowered: false,
-            cached: false,
-          },
-        },
-        { status: 503 }
       );
     }
 
@@ -118,7 +145,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate multiplier
-    if (!multiplier || multiplier <= 0 || multiplier > 10) {
+    if (typeof multiplier !== 'number' || multiplier < 0.1 || multiplier > 10) {
       return NextResponse.json<SmartScaleRecipeResponse>(
         {
           success: false,
@@ -144,14 +171,68 @@ export async function POST(request: NextRequest) {
       originalServings: recipe.servings?.amount,
     };
 
-    // Perform smart scaling
-    const result = await smartScaleIngredients(scaleRequest, recipeId);
+    const cacheKey = getSmartScaleCacheKey(recipe, multiplier);
+    const cachedResult = smartScaleCache.get<Awaited<ReturnType<typeof smartScaleIngredients>>>(cacheKey);
+    if (cachedResult) {
+      return NextResponse.json<SmartScaleRecipeResponse>(
+        {
+          success: true,
+          data: {
+            ingredients: cachedResult.ingredients,
+            tips: cachedResult.tips,
+            cookingTimeAdjustment: cachedResult.cookingTimeAdjustment,
+            success: cachedResult.success,
+            error: cachedResult.error,
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+            aiPowered: cachedResult.success,
+            cached: true,
+          },
+        },
+        { status: 200 }
+      );
+    }
+
+    // Check if Gemini is configured (only required on a cache miss)
+    if (!isGeminiConfigured()) {
+      return NextResponse.json<SmartScaleRecipeResponse>(
+        {
+          success: false,
+          error: {
+            code: ErrorCode.AI_CONFIG_ERROR,
+            message: 'AI scaling is not configured. Please set GEMINI_API_KEY.',
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+            aiPowered: false,
+            cached: false,
+          },
+        },
+        { status: 503 }
+      );
+    }
+
+    // Perform smart scaling (coalesce identical concurrent requests)
+    let inFlight = inFlightSmartScaleRequests.get(cacheKey);
+    if (!inFlight) {
+      inFlight = smartScaleIngredients(scaleRequest, recipeId).finally(() => {
+        inFlightSmartScaleRequests.delete(cacheKey);
+      });
+      inFlightSmartScaleRequests.set(cacheKey, inFlight);
+    }
+
+    const result = await inFlight;
+
+    smartScaleCache.set(cacheKey, result);
 
     return NextResponse.json<SmartScaleRecipeResponse>(
       {
         success: true,
         data: {
-          ingredients: result.ingredients as unknown as SmartScaledIngredient[],
+          ingredients: result.ingredients,
           tips: result.tips,
           cookingTimeAdjustment: result.cookingTimeAdjustment,
           success: result.success,
@@ -161,7 +242,7 @@ export async function POST(request: NextRequest) {
           requestId,
           processingTime: Date.now() - startTime,
           aiPowered: result.success,
-          cached: false, // TODO: Track cache hits from smartScaleIngredients
+          cached: false,
         },
       },
       { status: 200 }

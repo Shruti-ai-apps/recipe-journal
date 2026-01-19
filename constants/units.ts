@@ -140,6 +140,13 @@ export const UNITS: Record<string, UnitDefinition> = {
 };
 
 /**
+ * Lowercased unit key lookup map (e.g., "fluidounce" -> "fluidOunce")
+ */
+const UNIT_KEY_LOOKUP = new Map<string, string>(
+  Object.keys(UNITS).map((key) => [key.toLowerCase(), key])
+);
+
+/**
  * Build a lookup map from abbreviations to unit names
  */
 export function buildAbbreviationMap(): Map<string, string> {
@@ -164,7 +171,17 @@ export const UNIT_ABBREVIATION_MAP = buildAbbreviationMap();
  * Get unit definition by name or abbreviation
  */
 export function getUnit(nameOrAbbr: string): UnitDefinition | undefined {
-  const unitName = UNIT_ABBREVIATION_MAP.get(nameOrAbbr.toLowerCase());
+  const trimmed = nameOrAbbr?.trim();
+  if (!trimmed) return undefined;
+
+  // Allow direct unit key lookups (e.g., "fluidOunce")
+  const directKey = UNIT_KEY_LOOKUP.get(trimmed.toLowerCase());
+  if (directKey) {
+    return UNITS[directKey];
+  }
+
+  // Otherwise resolve via name/abbreviation map
+  const unitName = UNIT_ABBREVIATION_MAP.get(trimmed.toLowerCase());
   return unitName ? UNITS[unitName] : undefined;
 }
 

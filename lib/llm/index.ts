@@ -13,9 +13,6 @@ export { getGeminiClient, isGeminiConfigured, GEMINI_MODEL } from './client';
 // Types
 export type {
   SmartScaleRequest,
-  SmartScaleResponse,
-  SmartScaledIngredient,
-  IngredientCategory,
   CachedScaleResult,
   GeminiScaleResponse,
 } from './types';

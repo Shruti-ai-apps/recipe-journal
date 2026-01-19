@@ -56,7 +56,7 @@ function SmartScaleToggle({
 
       {enabled && !loading && (
         <p className="smart-scale-hint">
-          AI will intelligently adjust eggs, spices, and leavening
+          AI adds guidance for eggs, spices, and leavening
         </p>
       )}
 
