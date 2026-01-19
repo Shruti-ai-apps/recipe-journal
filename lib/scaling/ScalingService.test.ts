@@ -204,7 +204,7 @@ describe('ScalingService', () => {
 
       expect(ing.scaledQuantity?.value).toBe(2);
       expect(ing.scaledQuantity?.valueTo).toBe(4);
-      expect(ing.scaledQuantity?.displayValue).toBe('2–4');
+      expect(ing.scaledQuantity?.displayValue).toBe('2-4');
       expect(ing.displayText).toContain('tablespoons');
     });
 
@@ -223,7 +223,7 @@ describe('ScalingService', () => {
       const result = await service.scaleRecipe(recipe, { multiplier: 0.5 });
       const ing = result.scaledIngredients[0];
 
-      expect(ing.scaledQuantity?.displayValue).toBe('1/2–1');
+      expect(ing.scaledQuantity?.displayValue).toBe('1/2-1');
     });
   });
 

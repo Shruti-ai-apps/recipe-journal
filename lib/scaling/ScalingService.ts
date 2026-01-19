@@ -246,7 +246,7 @@ export class ScalingService {
     }
 
     const displayValue =
-      fromDisplay === toDisplay ? fromDisplay : `${fromDisplay}–${toDisplay}`;
+      fromDisplay === toDisplay ? fromDisplay : `${fromDisplay}-${toDisplay}`;
 
     const wasRounded =
       fromDisplay !== valueFrom.toString() || toDisplay !== valueTo.toString();
@@ -286,7 +286,59 @@ export class ScalingService {
       return null;
     }
 
-    return { value: converted, unit: targetUnit };
+    return this.normalizeConvertedValue(converted, targetUnit, targetSystem);
+  }
+
+  private normalizeConvertedValue(
+    value: number,
+    unit: string,
+    targetSystem: UnitSystem
+  ): { value: number; unit: string } {
+    if (!Number.isFinite(value) || value <= 0) {
+      return { value, unit };
+    }
+
+    // Metric upgrades: mL -> L, g -> kg
+    if (targetSystem === UnitSystem.METRIC) {
+      if (unit === 'milliliter' && value >= 1000) {
+        const upgraded = convertUnit(value, 'milliliter', 'liter');
+        if (upgraded !== null) return { value: upgraded, unit: 'liter' };
+      }
+
+      if (unit === 'gram' && value >= 1000) {
+        const upgraded = convertUnit(value, 'gram', 'kilogram');
+        if (upgraded !== null) return { value: upgraded, unit: 'kilogram' };
+      }
+
+      return { value, unit };
+    }
+
+    // US upgrades: cups -> quarts -> gallons, ounces -> pounds (for large quantities)
+    if (targetSystem === UnitSystem.US) {
+      if (unit === 'cup' && value >= 16) {
+        const upgraded = convertUnit(value, 'cup', 'gallon');
+        if (upgraded !== null) return { value: upgraded, unit: 'gallon' };
+      }
+
+      if (unit === 'cup' && value >= 4) {
+        const upgraded = convertUnit(value, 'cup', 'quart');
+        if (upgraded !== null) return { value: upgraded, unit: 'quart' };
+      }
+
+      if (unit === 'quart' && value >= 4) {
+        const upgraded = convertUnit(value, 'quart', 'gallon');
+        if (upgraded !== null) return { value: upgraded, unit: 'gallon' };
+      }
+
+      if (unit === 'ounce' && value >= 32) {
+        const upgraded = convertUnit(value, 'ounce', 'pound');
+        if (upgraded !== null) return { value: upgraded, unit: 'pound' };
+      }
+
+      return { value, unit };
+    }
+
+    return { value, unit };
   }
 
   /**

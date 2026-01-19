@@ -97,10 +97,12 @@ export async function checkHealth(): Promise<{ status: string }> {
 export async function smartScaleRecipe(
   recipe: Recipe,
   multiplier: number,
-  recipeId?: string
+  recipeId?: string,
+  signal?: AbortSignal
 ): Promise<SmartScaleData> {
   return apiFetch<SmartScaleData>('/recipes/scale-smart', {
     method: 'POST',
     body: JSON.stringify({ recipe, multiplier, recipeId }),
+    signal,
   });
 }
