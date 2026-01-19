@@ -19,8 +19,9 @@ import { logger } from '@/lib/utils';
 
 // Regex patterns for parsing
 // Includes decimal point (.) to handle quantities like "0.5 cup"
+// Includes slash fractions to handle "1/2 cup sugar" (no whitespace).
 const QUANTITY_PATTERN =
-  /^([\d.½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]+(?:\s*[-–to]\s*[\d.½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]+)?(?:\s+[\d./]+)?)/i;
+  /^([\d./½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅑⅒⅐]+(?:\s*(?:-|–|to)\s*[\d./½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅑⅒⅐]+)?(?:\s+[\d./]+)?)/i;
 
 const PREPARATION_WORDS = [
   'chopped',
@@ -178,7 +179,9 @@ export class IngredientParser {
     const remaining = trimmed.substring(match[0].length).trim();
 
     // Check for range (includes decimal point for quantities like "0.5-1")
-    const rangeMatch = quantityStr.match(/([\d.½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞\s/]+)\s*[-–to]+\s*([\d.½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞\s/]+)/i);
+    const rangeMatch = quantityStr.match(
+      /([\d./½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅑⅒⅐\s]+)\s*(?:-|–|to)\s*([\d./½⅓⅔¼¾⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞⅑⅒⅐\s]+)/i
+    );
 
     if (rangeMatch) {
       const valueFrom = this.parseQuantityValue(rangeMatch[1]);

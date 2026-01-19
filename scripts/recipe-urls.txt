@@ -1,0 +1,57 @@
+# Scaling verification corpus (one URL per line).
+# Notes:
+# - Prefer pages with Recipe schema (schema.org) for reliable parsing.
+# - Feel free to add/remove URLs as you encounter new edge cases.
+
+# Allrecipes (schema.org)
+https://www.allrecipes.com/recipe/232930/cauliflower-pizza-crust/
+
+# BBC Good Food (schema.org; avoid premium paywalls)
+https://www.bbcgoodfood.com/recipes/healthy-bolognese
+https://www.bbcgoodfood.com/recipes/champagne-raspberry-possets
+
+# King Arthur Baking (fractions, ranges, grams in parentheses)
+https://www.kingarthurbaking.com/recipes/just-4-chocolate-chip-cookies-recipe
+https://www.kingarthurbaking.com/recipes/gingerbread-recipe
+https://www.kingarthurbaking.com/recipes/pate-sucree-recipe
+https://www.kingarthurbaking.com/recipes/sweetheart-pull-apart-chocolate-buns-recipe
+https://www.kingarthurbaking.com/recipes/sugar-cookies-recipe
+
+# RecipeTin Eats (dual units: oz/g, fractions)
+https://www.recipetineats.com/hot-mushroom-pepperoni-pizza-dip/
+
+# Budget Bytes (Tbsp/tsp, ounces, "pinch", "to taste")
+https://www.budgetbytes.com/curried-tofu-salad/
+https://www.budgetbytes.com/mediterranean-coleslaw/
+https://www.budgetbytes.com/pesto-chicken-and-broccoli-salad/
+https://www.budgetbytes.com/creamy-polenta/
+https://www.budgetbytes.com/maizena/
+https://www.budgetbytes.com/chicken-cranberry-salad-lemon-poppy-seed-dressing/
+https://www.budgetbytes.com/ramen-noodle-salad/
+https://www.budgetbytes.com/coconut-curry-hummus/
+
+# Cookie and Kate (unicode fractions: ¼, ½, ⅓)
+https://cookieandkate.com/sesame-dressing-recipe/
+https://cookieandkate.com/easy-romesco-sauce-recipe/
+https://cookieandkate.com/creamy-avocado-dip-recipe/
+
+# Minimalist Baker (US + metric toggle; simple + spices)
+https://minimalistbaker.com/fudgy-gluten-free-chocolate-cake/
+https://minimalistbaker.com/diy-pumpkin-pie-spice/
+
+# Tastes Better From Scratch (built-in 1x/2x/3x, ranges)
+https://tastesbetterfromscratch.com/quinoa-veggie-burger/
+https://tastesbetterfromscratch.com/triple-berry-crisp
+https://tastesbetterfromscratch.com/pumpkin-cream-cheese-muffins/
+https://tastesbetterfromscratch.com/asian-chicken-salad/
+https://tastesbetterfromscratch.com/ranch-dressing/
+https://tastesbetterfromscratch.com/crab-cakes/
+
+# Gimme Some Oven (built-in scaling UI, mixed formats like "3/4 cup + 2 tablespoons")
+https://www.gimmesomeoven.com/seed-cycling-energy-bites/
+https://www.gimmesomeoven.com/colorful-cabbage-salad/
+
+# Ambitious Kitchen (fractions, parentheses, "pinch")
+https://www.ambitiouskitchen.com/nut-seed-granola/
+https://www.ambitiouskitchen.com/spinach-garlic-parmesan-orzo-with-crispy-bacon/
+https://www.ambitiouskitchen.com/tummy-soothing-smoothie/

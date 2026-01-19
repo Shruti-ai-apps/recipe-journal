@@ -1,0 +1,379 @@
+[1A[2K
+[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+Running 164 tests using 4 workers
+
+[1A[2K[1/164] [chromium] › e2e\auth\auth-navigation.spec.ts:12:7 › Auth Pages Navigation › should load signup page
+[1A[2K[2/164] [chromium] › e2e\auth\auth-navigation.spec.ts:5:7 › Auth Pages Navigation › should load login page
+[1A[2K[3/164] [chromium] › e2e\auth\auth-navigation.spec.ts:31:7 › Auth Pages Navigation › forgot-password should redirect to login
+[1A[2K[4/164] [chromium] › e2e\auth\auth-navigation.spec.ts:19:7 › Auth Pages Navigation › should load forgot-password page
+[1A[2K
+[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+[1A[2K[5/164] [chromium] › e2e\auth\auth-navigation.spec.ts:45:7 › Auth Pages - Navigation from Home › should navigate from home to login
+[1A[2K[6/164] [chromium] › e2e\auth\auth-navigation.spec.ts:54:7 › Auth Pages - Navigation from Home › should navigate back to home from login
+[1A[2K[7/164] [chromium] › e2e\auth\auth-navigation.spec.ts:66:7 › Auth Pages - OAuth Callback › should have auth callback route
+[1A[2K[8/164] [chromium] › e2e\auth\auth-navigation.spec.ts:88:7 › Auth Pages - Logged Out Redirect › should allow access to login when logged out
+[1A[2K
+[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+[1A[2K
+[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+[1A[2K[9/164] [chromium] › e2e\auth\auth-navigation.spec.ts:96:7 › Auth Pages - Logged Out Redirect › should allow access to public pages when logged out
+[1A[2K[10/164] [chromium] › e2e\auth\auth-navigation.spec.ts:109:7 › Auth Pages - Header Consistency › should show consistent header on login page
+[1A[2K[11/164] [chromium] › e2e\auth\auth-navigation.spec.ts:121:7 › Auth Pages - Header Consistency › should show consistent header on signup page
+[1A[2K[12/164] [chromium] › e2e\auth\auth-navigation.spec.ts:128:7 › Auth Pages - Header Consistency › should maintain theme toggle on auth pages
+[1A[2K[13/164] [chromium] › e2e\auth\auth-navigation.spec.ts:136:7 › Auth Pages - Header Consistency › should maintain palette selector on auth pages
+[1A[2K[14/164] [chromium] › e2e\auth\auth-navigation.spec.ts:146:7 › Auth Pages - Deep Linking › should handle direct navigation to login
+[1A[2K[15/164] [chromium] › e2e\auth\auth-navigation.spec.ts:153:7 › Auth Pages - Deep Linking › should handle direct navigation to signup
+[1A[2K[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+[1A[2K[16/164] [chromium] › e2e\auth\login-flow.spec.ts:9:7 › Login Flow - Email to OTP Transition › should show OTP step after valid email submission
+[1A[2K[17/164] [chromium] › e2e\auth\login-flow.spec.ts:56:7 › Login Flow - OTP Step UI › should display email confirmation on OTP step
+[1A[2K[18/164] [chromium] › e2e\auth\login-flow.spec.ts:70:7 › Login Flow - OTP Step UI › should have back button to return to email step
+[1A[2K[19/164] [chromium] › e2e\auth\login-flow.spec.ts:88:7 › Login Flow - OTP Step UI › should show 6 OTP input fields
+[1A[2K[20/164] [chromium] › e2e\auth\login-flow.spec.ts:100:7 › Login Flow - OTP Step UI › should show resend button with countdown
+[1A[2K[21/164] [chromium] › e2e\auth\login-flow.spec.ts:112:7 › Login Flow - OTP Step UI › should focus first OTP input automatically
+[1A[2K[22/164] [chromium] › e2e\auth\login-flow.spec.ts:138:7 › Login Flow - OTP Input Behavior › should auto-advance to next input after typing digit
+[1A[2K[23/164] [chromium] › e2e\auth\login-flow.spec.ts:155:7 › Login Flow - OTP Input Behavior › should only accept numeric input
+[1A[2K[24/164] [chromium] › e2e\auth\login-flow.spec.ts:174:7 › Login Flow - OTP Input Behavior › should show error state for invalid OTP
+[1A[2K[25/164] [chromium] › e2e\auth\login-flow.spec.ts:203:7 › Login Flow - Error Handling › should handle Supabase not configured gracefully
+[1A[2K[26/164] [chromium] › e2e\auth\login.spec.ts:9:7 › Login Page › should load the login page
+[1A[2K[27/164] [chromium] › e2e\auth\login.spec.ts:13:7 › Login Page › should display email input form
+[1A[2K[28/164] [chromium] › e2e\auth\login.spec.ts:18:7 › Login Page › should display Continue with Email button
+[1A[2K[29/164] [chromium] › e2e\auth\login.spec.ts:23:7 › Login Page › should display Google login button
+[1A[2K[30/164] [chromium] › e2e\auth\login.spec.ts:28:7 › Login Page › should show "No password needed" message
+[1A[2K[31/164] [chromium] › e2e\auth\login.spec.ts:33:7 › Login Page › should display Welcome title
+[1A[2K[32/164] [chromium] › e2e\auth\login.spec.ts:38:7 › Login Page › should display subtitle about receiving sign-in code
+[1A[2K[33/164] [chromium] › e2e\auth\login.spec.ts:43:7 › Login Page › should have email input with correct placeholder
+[1A[2K[34/164] [chromium] › e2e\auth\login.spec.ts:48:7 › Login Page › should have divider with "or" text
+[1A[2K[35/164] [chromium] › e2e\auth\login.spec.ts:60:7 › Login Page - Form Validation › should disable submit button when email is empty
+[1A[2K[36/164] [chromium] › e2e\auth\login.spec.ts:67:7 › Login Page - Form Validation › should enable submit button when email is entered
+[1A[2K[37/164] [chromium] › e2e\auth\login.spec.ts:81:7 › Login Page - Form Validation › should show error for invalid email format
+[1A[2K[38/164] [chromium] › e2e\auth\login.spec.ts:95:7 › Login Page - Form Validation › should clear error when typing valid email
+[1A[2K[39/164] [chromium] › e2e\auth\login.spec.ts:118:7 › Login Page - Accessibility › should have accessible email input label
+[1A[2K[40/164] [chromium] › e2e\auth\login.spec.ts:124:7 › Login Page - Accessibility › should support keyboard navigation
+[1A[2K[41/164] [chromium] › e2e\auth\login.spec.ts:132:7 › Login Page - Accessibility › should have autocomplete attribute for email
+[1A[2K[42/164] [chromium] › e2e\auth\user-menu.spec.ts:16:7 › User Menu - Unauthenticated State › should show Sign in link when logged out
+[1A[2K[43/164] [chromium] › e2e\auth\user-menu.spec.ts:21:7 › User Menu - Unauthenticated State › should navigate to login on Sign in click
+[1A[2K[44/164] [chromium] › e2e\auth\user-menu.spec.ts:28:7 › User Menu - Unauthenticated State › should show Sign in link in header on all pages
+[1A[2K[45/164] [chromium] › e2e\auth\user-menu.spec.ts:44:7 › User Menu - Header Integration › should display user menu in header
+[1A[2K[46/164] [chromium] › e2e\auth\user-menu.spec.ts:59:7 › User Menu - Header Integration › should place auth element after Favorites link
+[1A[2K[47/164] [chromium] › e2e\auth\user-menu.spec.ts:71:7 › User Menu - Responsive Behavior › should show Sign in link on mobile viewport
+[1A[2K[48/164] [chromium] › e2e\auth\user-menu.spec.ts:79:7 › User Menu - Responsive Behavior › should show Sign in link on tablet viewport
+[1A[2K[49/164] [chromium] › e2e\auth\user-menu.spec.ts:87:7 › User Menu - Responsive Behavior › should show Sign in link on desktop viewport
+[1A[2K[50/164] [chromium] › e2e\auth\user-menu.spec.ts:101:7 › User Menu - Accessibility › should have accessible Sign in link
+[1A[2K[51/164] [chromium] › e2e\auth\user-menu.spec.ts:107:7 › User Menu - Accessibility › should be keyboard accessible
+[1A[2K[52/164] [chromium] › e2e\auth\user-menu.spec.ts:122:7 › User Menu - Theme Persistence › should maintain theme when navigating to login
+[1A[2K[53/164] [chromium] › e2e\favorites-cloud.spec.ts:15:7 › Favorites - localStorage Storage (Guest) › should persist favorites in localStorage
+[1A[2K[54/164] [chromium] › e2e\favorites-cloud.spec.ts:48:7 › Favorites - localStorage Storage (Guest) › should handle empty favorites gracefully
+[1A[2K[55/164] [chromium] › e2e\favorites-cloud.spec.ts:67:7 › Favorites - Offline Behavior › should show offline banner on favorites page when offline
+[1A[2K[56/164] [chromium] › e2e\favorites-cloud.spec.ts:93:7 › Favorites - Offline Behavior › should access localStorage favorites when offline
+[1A[2K[57/164] [chromium] › e2e\favorites-cloud.spec.ts:132:7 › Favorites - Offline Behavior › should maintain search functionality when offline
+[1A[2K[58/164] [chromium] › e2e\favorites-cloud.spec.ts:178:7 › Favorites - Data Integrity › should preserve recipe data structure
+[1A[2K[59/164] [chromium] › e2e\favorites-cloud.spec.ts:211:7 › Favorites - Data Integrity › should handle malformed localStorage data
+[1A[2K[60/164] [chromium] › e2e\favorites-cloud.spec.ts:225:7 › Favorites - Data Integrity › should handle null favorites in localStorage
+[1A[2K[61/164] [chromium] › e2e\favorites-cloud.spec.ts:238:7 › Favorites - Cross-Page Consistency › should maintain favorites across navigation
+[1A[2K[62/164] [chromium] › e2e\favorites-cloud.spec.ts:293:7 › Favorites - Delete Confirmation Modal › should have confirmation modal structure in DOM
+[1A[2K[63/164] [chromium] › e2e\favorites-cloud.spec.ts:322:7 › Favorites - Empty State › should show appropriate message when no favorites
+[1A[2K[64/164] [chromium] › e2e\favorites-cloud.spec.ts:337:7 › Favorites - Empty State › should show empty search results message
+[1A[2K[65/164] [chromium] › e2e\favorites.spec.ts:14:7 › Favorites Page › should load the favorites page
+[1A[2K[66/164] [chromium] › e2e\favorites.spec.ts:18:7 › Favorites Page › should display search bar
+[1A[2K[67/164] [chromium] › e2e\favorites.spec.ts:23:7 › Favorites Page › should display search placeholder
+[1A[2K[68/164] [chromium] › e2e\favorites.spec.ts:28:7 › Favorites Page › should show empty state when no favorites
+[1A[2K[69/164] [chromium] › e2e\favorites.spec.ts:42:9 › Favorites Page › Search Functionality › should filter favorites when typing in search
+[1A[2K[70/164] [chromium] › e2e\favorites.spec.ts:52:9 › Favorites Page › Search Functionality › should show clear button when search has value
+[1A[2K[71/164] [chromium] › e2e\favorites.spec.ts:64:9 › Favorites Page › Search Functionality › should clear search when clear button clicked
+[1A[2K[72/164] [chromium] › e2e\favorites.spec.ts:76:9 › Favorites Page › Search Functionality › should hide clear button when search is empty
+[1A[2K[73/164] [chromium] › e2e\home.spec.ts:9:7 › Home Page › should load the home page successfully
+[1A[2K[74/164] [chromium] › e2e\home.spec.ts:13:7 › Home Page › should display the application header
+[1A[2K[75/164] [chromium] › e2e\home.spec.ts:18:7 › Home Page › should display the URL input form
+[1A[2K[76/164] [chromium] › e2e\home.spec.ts:24:7 › Home Page › should display the Get Recipe button
+[1A[2K[77/164] [chromium] › e2e\home.spec.ts:29:7 › Home Page › should display supported sites hint text
+[1A[2K[78/164] [chromium] › e2e\home.spec.ts:34:7 › Home Page › should have paste button for clipboard functionality
+[1A[2K[79/164] [chromium] › e2e\migration-banner.spec.ts:9:7 › Migration Banner - Unauthenticated › should not show migration banner for guest users
+[1A[2K[80/164] [chromium] › e2e\migration-banner.spec.ts:15:7 › Migration Banner - Unauthenticated › should not show migration banner on favorites page for guests
+[1A[2K[81/164] [chromium] › e2e\migration-banner.spec.ts:25:7 › Migration Banner - Component Structure › migration banner CSS should be available
+[1A[2K[82/164] [chromium] › e2e\migration-banner.spec.ts:50:7 › Migration Banner - localStorage Simulation › should store recipes in localStorage for guest users
+[1A[2K[83/164] [chromium] › e2e\migration-banner.spec.ts:81:7 › Migration Banner - localStorage Simulation › should count recipes in localStorage correctly
+[1A[2K[84/164] [chromium] › e2e\migration-banner.spec.ts:127:7 › Migration Banner - UI Elements › should have proper button text for actions
+[1A[2K[85/164] [chromium] › e2e\migration-banner.spec.ts:145:7 › Migration Banner - UI Elements › should display recipe count in message
+[1A[2K[86/164] [chromium] › e2e\migration-banner.spec.ts:160:7 › Migration Banner - Accessibility › dismiss button should have aria-label
+[1A[2K[87/164] [chromium] › e2e\navigation.spec.ts:9:7 › Navigation › should navigate from home to favorites
+[1A[2K[88/164] [chromium] › e2e\navigation.spec.ts:19:7 › Navigation › should navigate from favorites to home
+[1A[2K[89/164] [chromium] › e2e\navigation.spec.ts:35:7 › Navigation › should highlight active navigation item
+[1A[2K  1) [chromium] › e2e\navigation.spec.ts:9:7 › Navigation › should navigate from home to favorites ─
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: /favorites/i }) resolved to 2 elements:
+        1) <a class="nav-link" href="/favorites">Favorites</a> aka getByRole('banner').getByRole('link', { name: 'Favorites' })
+        2) <a class="nav-tab " href="/favorites">…</a> aka getByRole('link', { name: 'Favorites' }).nth(1)
+
+    Call log:
+    [2m  - waiting for getByRole('link', { name: /favorites/i })[22m
+
+
+      12 |     // Find and click favorites link with navigation wait
+      13 |     const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    > 14 |     await waitForNavigation(page, () => favoritesLink.click());
+         |                                                       ^
+      15 |
+      16 |     await expect(page).toHaveURL('/favorites');
+      17 |   });
+        at action (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\navigation.spec.ts:14:55)
+        at waitForNavigation (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\helpers\test-utils.ts:102:5)
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\navigation.spec.ts:14:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\navigation-Navigation-should-navigate-from-home-to-favorites-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\navigation-Navigation-should-navigate-from-home-to-favorites-chromium\error-context.md
+
+
+[1A[2K[90/164] [chromium] › e2e\navigation.spec.ts:55:7 › Header › should display application title/logo
+[1A[2K[91/164] [chromium] › e2e\navigation.spec.ts:65:7 › Responsive Navigation › should be accessible on mobile viewport
+[1A[2K  2) [chromium] › e2e\navigation.spec.ts:35:7 › Navigation › should highlight active navigation item 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: getByRole('link', { name: /favorites/i })
+    Expected: visible
+    Error: strict mode violation: getByRole('link', { name: /favorites/i }) resolved to 2 elements:
+        1) <a class="nav-link" href="/favorites">Favorites</a> aka getByRole('banner').getByRole('link', { name: 'Favorites' })
+        2) <a href="/favorites" class="nav-tab nav-tab--active">…</a> aka getByRole('link', { name: 'Favorites' }).nth(1)
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for getByRole('link', { name: /favorites/i })[22m
+
+
+      38 |     // The favorites nav item should have active styling
+      39 |     const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    > 40 |     await expect(favoritesLink).toBeVisible();
+         |                                 ^
+      41 |   });
+      42 | });
+      43 |
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\navigation.spec.ts:40:33
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\navigation-Navigation-shou-76141-ight-active-navigation-item-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\navigation-Navigation-shou-76141-ight-active-navigation-item-chromium\error-context.md
+
+
+[1A[2K[92/164] [chromium] › e2e\navigation.spec.ts:45:7 › Header › should display header on all pages
+[1A[2K[93/164] [chromium] › e2e\navigation.spec.ts:84:7 › Responsive Navigation › should be accessible on desktop viewport
+[1A[2K[94/164] [chromium] › e2e\navigation.spec.ts:95:7 › 404 Page › should show 404 for non-existent routes
+[1A[2K[95/164] [chromium] › e2e\navigation.spec.ts:75:7 › Responsive Navigation › should be accessible on tablet viewport
+[1A[2K[2m[WebServer] [22m [33m[1m⚠[22m[39m Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+
+[1A[2K[96/164] [chromium] › e2e\offline-banner.spec.ts:9:7 › Offline Banner › should not show banner when online and never was offline
+[1A[2K[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+[1A[2K[97/164] [chromium] › e2e\offline-banner.spec.ts:15:7 › Offline Banner › should show offline banner when network goes offline
+[1A[2K[98/164] [chromium] › e2e\offline-banner.spec.ts:31:7 › Offline Banner › should show reconnected banner when coming back online
+[1A[2K[99/164] [chromium] › e2e\offline-banner.spec.ts:52:7 › Offline Banner › should display offline icon in banner
+[1A[2K[100/164] [chromium] › e2e\offline-banner.spec.ts:60:7 › Offline Banner › offline banner should remain visible after state change
+[1A[2K[101/164] [chromium] › e2e\offline-banner.spec.ts:84:7 › Offline Banner - Mobile › should display offline banner on mobile viewport
+[1A[2K[102/164] [chromium] › e2e\recipe-flow.spec.ts:14:9 › Recipe Flow › URL Validation › should show validation error for empty URL submission
+[1A[2K[103/164] [chromium] › e2e\recipe-flow.spec.ts:20:9 › Recipe Flow › URL Validation › should not submit with invalid URL
+[1A[2K[104/164] [chromium] › e2e\recipe-flow.spec.ts:39:9 › Recipe Flow › URL Validation › should show validation error for non-HTTP URL
+[1A[2K  3) [chromium] › e2e\offline-banner.spec.ts:31:7 › Offline Banner › should show reconnected banner when coming back online 
+
+    Error: [2mexpect([22m[31mlocator[39m[2m).[22mtoBeVisible[2m([22m[2m)[22m failed
+
+    Locator: locator('.offline-banner--reconnected')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+    [2m  - Expect "toBeVisible" with timeout 5000ms[22m
+    [2m  - waiting for locator('.offline-banner--reconnected')[22m
+
+
+      44 |     // Should show reconnected message
+      45 |     const reconnectedBanner = page.locator('.offline-banner--reconnected');
+    > 46 |     await expect(reconnectedBanner).toBeVisible();
+         |                                     ^
+      47 |
+      48 |     const bannerText = page.locator('.offline-banner__text');
+      49 |     await expect(bannerText).toContainText('Back online');
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\offline-banner.spec.ts:46:37
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\offline-banner-Offline-Ban-72582-ner-when-coming-back-online-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\offline-banner-Offline-Ban-72582-ner-when-coming-back-online-chromium\error-context.md
+
+
+[1A[2K[105/164] [chromium] › e2e\recipe-flow.spec.ts:82:9 › Recipe Flow › Recipe Submission › should enable submit button when URL is entered
+[1A[2K[106/164] [chromium] › e2e\recipe-flow.spec.ts:97:9 › Recipe Flow › Recipe Submission › should show loading state when submitting valid URL
+[1A[2K[107/164] [chromium] › e2e\recipe-flow.spec.ts:110:9 › Recipe Flow › Recipe Submission › should disable input during loading
+[1A[2K[108/164] [chromium] › e2e\recipe-flow.spec.ts:125:9 › Recipe Flow › Keyboard Navigation › should submit form on Enter key
+[1A[2K[109/164] [chromium] › e2e\recipe-flow.spec.ts:54:9 › Recipe Flow › URL Validation › should clear validation error when typing
+[1A[2K[110/164] [chromium] › e2e\recipe-flow.spec.ts:136:9 › Recipe Flow › Keyboard Navigation › should focus URL input on page load
+[1A[2K[2m[WebServer] [22m [31m[1m⨯[22m[39m TypeError: Response body object should not be disturbed or locked
+[2m[WebServer] [22m    at extractBody (node:internal/deps/undici/undici:6155:17)
+[2m[WebServer] [22m    at new Request (node:internal/deps/undici/undici:7081:48)
+[2m[WebServer] [22m    at new NextRequest (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\web\spec-extension\request.js:33:14)
+[2m[WebServer] [22m    at NextRequestAdapter.fromNodeNextRequest (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\web\spec-extension\adapters\next-request.js:75:16)
+[2m[WebServer] [22m    at NextRequestAdapter.fromBaseNextRequest (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\web\spec-extension\adapters\next-request.js:51:35)
+[2m[WebServer] [22m    at doRender (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:1224:69)
+[2m[WebServer] [22m    at cacheEntry.responseCache.get.incrementalCache.incrementalCache (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:1454:34)
+[2m[WebServer] [22m    at ResponseCache.get (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\response-cache\index.js:53:26)
+[2m[WebServer] [22m    at DevServer.renderToResponseWithComponentsImpl (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:1369:53)
+[2m[WebServer] [22m    at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:911:121
+[2m[WebServer] [22m    at NextTracerImpl.trace (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\lib\trace\tracer.js:94:20)
+[2m[WebServer] [22m    at DevServer.renderToResponseWithComponents (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:911:41)
+[2m[WebServer] [22m    at DevServer.renderPageComponent (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:1608:35)
+[2m[WebServer] [22m    at async DevServer.renderToResponseImpl (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:1646:32)
+[2m[WebServer] [22m    at async DevServer.pipeImpl (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:834:25)
+[2m[WebServer] [22m    at async DevServer.handleCatchallRenderRequest (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\next-server.js:623:13)
+[2m[WebServer] [22m    at async DevServer.handleRequestImpl (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\node_modules\next\dist\server\base-server.js:736:17)
+
+[1A[2K[2m[WebServer] [22m⚠️  Node.js 18 and below are deprecated and will no longer be supported in future versions of @supabase/supabase-js. Please upgrade to Node.js 20 or later. For more information, visit: https://github.com/orgs/supabase/discussions/37217
+
+[1A[2K[111/164] [chromium] › e2e\smart-scaling.spec.ts:427:7 › Smart Scaling: Toggle Functionality › should display smart scale toggle when recipe is loaded
+[1A[2K[112/164] [chromium] › e2e\smart-scaling.spec.ts:438:7 › Smart Scaling: Toggle Functionality › should be disabled by default
+[1A[2K[113/164] [chromium] › e2e\smart-scaling.spec.ts:445:7 › Smart Scaling: Toggle Functionality › should enable smart scaling when toggled on
+[1A[2K[114/164] [chromium] › e2e\smart-scaling.spec.ts:462:7 › Smart Scaling: Toggle Functionality › should show loading state while fetching smart scale data
+[1A[2K[115/164] [chromium] › e2e\smart-scaling.spec.ts:493:7 › Smart Scaling: Toggle Functionality › should disable smart scaling when toggled off
+[1A[2K[116/164] [chromium] › e2e\smart-scaling.spec.ts:552:7 › Smart Scaling: AI Badges and Adjustments › should not display AI badges when smart scale is disabled
+[1A[2K[117/164] [chromium] › e2e\smart-scaling.spec.ts:522:7 › Smart Scaling: AI Badges and Adjustments › should display AI badges on adjusted ingredients when smart scale is enabled
+[1A[2K[118/164] [chromium] › e2e\smart-scaling.spec.ts:559:7 › Smart Scaling: AI Badges and Adjustments › should show adjustment reason on AI badge hover/click
+[1A[2K[119/164] [chromium] › e2e\smart-scaling.spec.ts:594:7 › Smart Scaling: Scaling Tips › should display scaling tips when smart scale is enabled
+[1A[2K[120/164] [chromium] › e2e\smart-scaling.spec.ts:608:7 › Smart Scaling: Scaling Tips › should display cooking time adjustment when provided
+[1A[2K  4) [chromium] › e2e\smart-scaling.spec.ts:522:7 › Smart Scaling: AI Badges and Adjustments › should display AI badges on adjusted ingredients when smart scale is enabled 
+
+    Error: [2mexpect([22m[31mreceived[39m[2m).[22mtoBeGreaterThanOrEqual[2m([22m[32mexpected[39m[2m)[22m
+
+    Expected: >= [32m1[39m
+    Received:    [31m0[39m
+
+      547 |     const aiText = page.getByLabel(/Rounded|Reduced|Scaled/i);
+      548 |     const aiTextCount = await aiText.count();
+    > 549 |     expect(aiTextCount).toBeGreaterThanOrEqual(1);
+          |                         ^
+      550 |   });
+      551 |
+      552 |   test('should not display AI badges when smart scale is disabled', async ({ page }) => {
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\smart-scaling.spec.ts:549:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\smart-scaling-Smart-Scalin-70c75-when-smart-scale-is-enabled-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\smart-scaling-Smart-Scalin-70c75-when-smart-scale-is-enabled-chromium\error-context.md
+
+
+[1A[2K[121/164] [chromium] › e2e\smart-scaling.spec.ts:634:7 › Smart Scaling: Scaling Tips › should hide AI tips when smart scale is disabled
+[1A[2K[122/164] [chromium] › e2e\smart-scaling.spec.ts:662:7 › Smart Scaling: Multiplier Changes › should fetch new smart scale data when multiplier changes
+[1A[2K[123/164] [chromium] › e2e\smart-scaling.spec.ts:706:7 › Smart Scaling: Multiplier Changes › should update ingredients when multiplier changes with smart scale enabled
+[1A[2K[124/164] [chromium] › e2e\smart-scaling.spec.ts:748:7 › Smart Scaling: Multiplier Changes › should update cooking tips when multiplier changes
+[1A[2K[125/164] [chromium] › e2e\smart-scaling.spec.ts:621:7 › Smart Scaling: Scaling Tips › should display multiple tips from AI
+[1A[2K[126/164] [chromium] › e2e\smart-scaling.spec.ts:789:7 › Smart Scaling: Error Handling › should fallback to linear scaling when AI fails
+[1A[2K[127/164] [chromium] › e2e\smart-scaling.spec.ts:810:7 › Smart Scaling: Error Handling › should handle API timeout gracefully
+[1A[2K[128/164] [chromium] › e2e\smart-scaling.spec.ts:851:7 › Smart Scaling: Error Handling › should handle 503 API configuration error
+[1A[2K[129/164] [chromium] › e2e\smart-scaling.spec.ts:907:7 › Smart Scaling: Compare Smart vs Regular Scaling › should show different values between smart and regular scaling
+[1A[2K[130/164] [chromium] › e2e\smart-scaling.spec.ts:922:7 › Smart Scaling: Compare Smart vs Regular Scaling › should toggle between smart and regular scaling values
+[1A[2K[131/164] [chromium] › e2e\smart-scaling.spec.ts:963:7 › Smart Scaling: Accessibility › should have proper ARIA attributes on toggle
+[1A[2K[132/164] [chromium] › e2e\smart-scaling.spec.ts:979:7 › Smart Scaling: Accessibility › should be keyboard accessible
+[1A[2K[133/164] [chromium] › e2e\smart-scaling.spec.ts:1008:7 › Smart Scaling: Accessibility › should have accessible labels
+[1A[2K[134/164] [chromium] › e2e\smart-scaling.spec.ts:1020:7 › Smart Scaling: State Persistence › should clear smart scale state when recipe changes
+[1A[2K[135/164] [chromium] › e2e\sync-status.spec.ts:9:7 › Sync Status - Unauthenticated › should not show sync status for guest users
+[1A[2K[136/164] [chromium] › e2e\sync-status.spec.ts:15:7 › Sync Status - Unauthenticated › should not show sync button on favorites page for guests
+[1A[2K[137/164] [chromium] › e2e\sync-status.spec.ts:28:7 › Sync Status - Component Structure › sync status CSS file should be imported
+[1A[2K[138/164] [chromium] › e2e\sync-status.spec.ts:56:7 › Sync Status - Accessibility › sync button should have proper aria-label when visible
+[1A[2K[139/164] [chromium] › e2e\sync-status.spec.ts:72:7 › Sync Status - UI Elements › should have proper button structure in DOM when authenticated
+[1A[2K[140/164] [chromium] › e2e\theme.spec.ts:15:7 › Theme Switching › should have theme attribute on html element
+[1A[2K[141/164] [chromium] › e2e\theme.spec.ts:20:7 › Theme Switching › should have palette attribute on html element
+[1A[2K[142/164] [chromium] › e2e\theme.spec.ts:25:7 › Theme Switching › should toggle theme when theme button clicked
+[1A[2K[143/164] [chromium] › e2e\theme.spec.ts:44:7 › Theme Switching › should persist theme preference in localStorage
+[1A[2K[144/164] [chromium] › e2e\theme.spec.ts:58:7 › Theme Switching › should load persisted theme on page reload
+[1A[2K[145/164] [chromium] › e2e\theme.spec.ts:82:7 › Theme Switching › should support palette customization
+[1A[2K[146/164] [chromium] › e2e\theme.spec.ts:99:7 › Color Scheme Preference › should render with a valid theme
+[1A[2K[147/164] [chromium] › e2e\theme.spec.ts:110:7 › Color Scheme Preference › should support dark mode media query
+[1A[2K[148/164] [chromium] › e2e\user-flows.spec.ts:22:7 › User Flow: Recipe Import › should display recipe after successful URL submission
+[1A[2K[149/164] [chromium] › e2e\user-flows.spec.ts:54:7 › User Flow: Recipe Import › should show loading spinner during fetch
+[1A[2K[150/164] [chromium] › e2e\user-flows.spec.ts:73:7 › User Flow: Recipe Scaling › should have scaling controls visible when recipe is loaded
+[1A[2K[151/164] [chromium] › e2e\user-flows.spec.ts:84:7 › User Flow: Recipe Scaling › should have multiplier buttons for scaling
+[1A[2K[152/164] [chromium] › e2e\user-flows.spec.ts:118:7 › User Flow: Save to Favorites › should have save button in recipe actions
+[1A[2K[153/164] [chromium] › e2e\user-flows.spec.ts:138:7 › User Flow: Save to Favorites › should show notification when recipe is saved
+[1A[2K[154/164] [chromium] › e2e\user-flows.spec.ts:176:7 › User Flow: Favorites Management › should navigate to favorites page
+[1A[2K[155/164] [chromium] › e2e\user-flows.spec.ts:180:7 › User Flow: Favorites Management › should display search functionality on favorites page
+[1A[2K[156/164] [chromium] › e2e\user-flows.spec.ts:185:7 › User Flow: Favorites Management › should filter favorites when searching
+[1A[2K[157/164] [chromium] › e2e\user-flows.spec.ts:200:7 › User Flow: Favorites Management › should clear search and show all favorites
+[1A[2K[158/164] [chromium] › e2e\user-flows.spec.ts:218:7 › User Flow: Complete Journey › should complete full flow: home → favorites → back
+[1A[2K[159/164] [chromium] › e2e\user-flows.spec.ts:236:7 › User Flow: Complete Journey › should maintain theme across navigation
+[1A[2K[160/164] [chromium] › e2e\user-flows.spec.ts:270:7 › User Flow: Complete Journey › should show recent favorites on home page when available
+[1A[2K[161/164] [chromium] › e2e\user-flows.spec.ts:305:7 › User Flow: Error Handling › should display error message for invalid recipe URL
+[1A[2K  5) [chromium] › e2e\user-flows.spec.ts:218:7 › User Flow: Complete Journey › should complete full flow: home → favorites → back 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: /favorites/i }) resolved to 2 elements:
+        1) <a class="nav-link" href="/favorites">Favorites</a> aka getByRole('banner').getByRole('link', { name: 'Favorites' })
+        2) <a class="nav-tab " href="/favorites">…</a> aka getByRole('link', { name: 'Favorites' }).nth(1)
+
+    Call log:
+    [2m  - waiting for getByRole('link', { name: /favorites/i })[22m
+
+
+      223 |     // Navigate to favorites
+      224 |     const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    > 225 |     await waitForNavigation(page, () => favoritesLink.click());
+          |                                                       ^
+      226 |     await expect(page).toHaveURL('/favorites');
+      227 |
+      228 |     // Navigate back to home
+        at action (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\user-flows.spec.ts:225:55)
+        at waitForNavigation (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\helpers\test-utils.ts:102:5)
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\user-flows.spec.ts:225:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\user-flows-User-Flow-Compl-1fe23-low-home-→-favorites-→-back-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\user-flows-User-Flow-Compl-1fe23-low-home-→-favorites-→-back-chromium\error-context.md
+
+
+[1A[2K  6) [chromium] › e2e\user-flows.spec.ts:236:7 › User Flow: Complete Journey › should maintain theme across navigation 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: /favorites/i }) resolved to 2 elements:
+        1) <a class="nav-link" href="/favorites">Favorites</a> aka getByRole('banner').getByRole('link', { name: 'Favorites' })
+        2) <a class="nav-tab " href="/favorites">…</a> aka getByRole('link', { name: 'Favorites' }).nth(1)
+
+    Call log:
+    [2m  - waiting for getByRole('link', { name: /favorites/i })[22m
+
+
+      249 |     // Navigate to favorites
+      250 |     const favoritesLink = page.getByRole('link', { name: /favorites/i });
+    > 251 |     await waitForNavigation(page, () => favoritesLink.click());
+          |                                                       ^
+      252 |     await expect(page).toHaveURL('/favorites');
+      253 |
+      254 |     // Wait for theme to be applied on new page
+        at action (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\user-flows.spec.ts:251:55)
+        at waitForNavigation (D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\helpers\test-utils.ts:102:5)
+        at D:\Shruti\Workspace\Shruti-ai-apps\recipe-journal\e2e\user-flows.spec.ts:251:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\user-flows-User-Flow-Compl-076ad-ain-theme-across-navigation-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\user-flows-User-Flow-Compl-076ad-ain-theme-across-navigation-chromium\error-context.md
+
+
+[1A[2K[162/164] [chromium] › e2e\user-flows.spec.ts:369:7 › User Flow: Accessibility › should have proper ARIA labels on interactive elements
+[1A[2K[163/164] [chromium] › e2e\user-flows.spec.ts:320:7 › User Flow: Error Handling › should allow dismissing error message
+[1A[2K[164/164] [chromium] › e2e\user-flows.spec.ts:344:7 › User Flow: Accessibility › should support keyboard navigation through main actions
+[1A[2K  6 failed
+    [chromium] › e2e\navigation.spec.ts:9:7 › Navigation › should navigate from home to favorites ──
+    [chromium] › e2e\navigation.spec.ts:35:7 › Navigation › should highlight active navigation item 
+    [chromium] › e2e\offline-banner.spec.ts:31:7 › Offline Banner › should show reconnected banner when coming back online 
+    [chromium] › e2e\smart-scaling.spec.ts:522:7 › Smart Scaling: AI Badges and Adjustments › should display AI badges on adjusted ingredients when smart scale is enabled 
+    [chromium] › e2e\user-flows.spec.ts:218:7 › User Flow: Complete Journey › should complete full flow: home → favorites → back 
+    [chromium] › e2e\user-flows.spec.ts:236:7 › User Flow: Complete Journey › should maintain theme across navigation 
+  8 skipped
+  150 passed (8.0m)
