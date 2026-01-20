@@ -40,7 +40,9 @@ describe('UrlInput', () => {
     it('renders hint text', () => {
       render(<UrlInput onSubmit={mockOnSubmit} />);
 
-      expect(screen.getByText(/Supports AllRecipes, Food Network/)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Paste a link from your favorite recipe site/i)
+      ).toBeInTheDocument();
     });
   });
 
