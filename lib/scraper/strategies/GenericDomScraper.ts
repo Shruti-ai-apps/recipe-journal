@@ -139,6 +139,17 @@ export class GenericDomScraper {
         }
       }
     }
+
+    const headed = this.findSectionListByHeading($, /^\s*ingredients?\s*:?\s*$/i, [
+      /^\s*(instructions?|directions?|method)\s*:?\s*$/i,
+      /^\s*notes?\s*:?\s*$/i,
+      /^\s*tips?\s*:?\s*$/i,
+    ]);
+    if (headed.length >= 2) {
+      logger.debug(`Found ${headed.length} ingredients using heading-based extraction`);
+      return headed;
+    }
+
     return [];
   }
 
@@ -162,7 +173,122 @@ export class GenericDomScraper {
         }
       }
     }
+
+    const headed = this.findSectionListByHeading($, /^\s*(instructions?|directions?|method)\s*:?\s*$/i, [
+      /^\s*notes?\s*:?\s*$/i,
+      /^\s*tips?\s*:?\s*$/i,
+      /^\s*nutrition\s*:?\s*$/i,
+      /^\s*equipment\s*:?\s*$/i,
+    ]);
+    if (headed.length >= 1) {
+      logger.debug(`Found ${headed.length} instructions using heading-based extraction`);
+      return headed;
+    }
+
     return [];
+  }
+
+  private getRecipeContentRoot($: cheerio.CheerioAPI): cheerio.Cheerio<cheerio.Element> {
+    const entry = $('.entry-content').first();
+    if (entry.length > 0) return entry;
+
+    const article = $('article').first();
+    if (article.length > 0) return article;
+
+    return $('body');
+  }
+
+  private findSectionListByHeading(
+    $: cheerio.CheerioAPI,
+    headingRegex: RegExp,
+    stopHeadingRegexes: RegExp[]
+  ): string[] {
+    const root = this.getRecipeContentRoot($);
+
+    const headingEl = this.findHeadingElement(root, headingRegex);
+    if (!headingEl) return [];
+
+    const items = this.collectListItemsAfterHeading($, headingEl, stopHeadingRegexes);
+    return items
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0 && t.length < 500);
+  }
+
+  private findHeadingElement(
+    root: cheerio.Cheerio<cheerio.Element>,
+    headingRegex: RegExp
+  ): cheerio.Cheerio<cheerio.Element> | null {
+    const candidates = root.find('h1,h2,h3,h4,h5,h6,p');
+    for (let i = 0; i < candidates.length; i++) {
+      const el = candidates.eq(i);
+      const text = el.text().trim();
+      if (headingRegex.test(text)) {
+        return el;
+      }
+    }
+    return null;
+  }
+
+  private collectListItemsAfterHeading(
+    $: cheerio.CheerioAPI,
+    headingEl: cheerio.Cheerio<cheerio.Element>,
+    stopHeadingRegexes: RegExp[]
+  ): string[] {
+    const items: string[] = [];
+
+    // Handle patterns like <p><strong>Ingredients:</strong></p>
+    let cursor = headingEl;
+    const tag = cursor.get(0)?.tagName?.toLowerCase();
+    if (tag === 'strong' || tag === 'span' || tag === 'em') {
+      cursor = cursor.parent();
+    }
+
+    for (let hops = 0; hops < 30; hops++) {
+      cursor = cursor.next();
+      if (!cursor || cursor.length === 0) break;
+
+      const cursorTag = cursor.get(0)?.tagName?.toLowerCase() || '';
+      if (!cursorTag) continue;
+
+      if (cursorTag === 'h1' || cursorTag === 'h2' || cursorTag === 'h3' || cursorTag === 'h4' || cursorTag === 'h5' || cursorTag === 'h6') {
+        const t = cursor.text().trim();
+        if (stopHeadingRegexes.some((r) => r.test(t))) break;
+        continue;
+      }
+
+      if (cursorTag === 'p') {
+        const t = cursor.text().trim();
+        if (stopHeadingRegexes.some((r) => r.test(t))) break;
+      }
+
+      if (cursorTag === 'ul' || cursorTag === 'ol') {
+        cursor.children('li').each((_, li) => {
+          const t = $(li).text().trim();
+          if (t) items.push(t);
+        });
+        continue;
+      }
+
+      // Some recipe sections are wrapped in divs
+      if (cursorTag === 'div') {
+        const listItems = cursor.find('li');
+        if (listItems.length > 0) {
+          listItems.each((_, li) => {
+            const t = $(li).text().trim();
+            if (t) items.push(t);
+          });
+          continue;
+        }
+      }
+
+      // Fallback: treat consecutive paragraphs as steps/lines
+      if (cursorTag === 'p') {
+        const t = cursor.text().trim();
+        if (t.length > 10) items.push(t);
+      }
+    }
+
+    return items;
   }
 
   /**
