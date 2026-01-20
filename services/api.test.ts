@@ -51,14 +51,15 @@ describe('API Service', () => {
     it('sends POST request with URL and returns recipe', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, data: mockRecipe }),
+        headers: { get: () => 'application/json' },
+        text: async () => JSON.stringify({ success: true, data: mockRecipe }),
       });
 
       const result = await parseRecipe('https://example.com/recipe');
 
       expect(mockFetch).toHaveBeenCalledWith('/api/recipes/parse', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: 'https://example.com/recipe' }),
       });
       expect(result.title).toBe('Test Recipe');
@@ -67,10 +68,13 @@ describe('API Service', () => {
     it('throws ApiRequestError on failure', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({
-          success: false,
-          error: { code: 'INVALID_URL', message: 'Invalid URL' },
-        }),
+        status: 400,
+        headers: { get: () => 'application/json' },
+        text: async () =>
+          JSON.stringify({
+            success: false,
+            error: { code: 'INVALID_URL', message: 'Invalid URL' },
+          }),
       });
 
       await expect(parseRecipe('invalid-url')).rejects.toThrow(ApiRequestError);
@@ -79,14 +83,16 @@ describe('API Service', () => {
     it('throws ApiRequestError with default error for unknown errors', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({ success: false }),
+        status: 500,
+        headers: { get: () => 'application/json' },
+        text: async () => JSON.stringify({ success: false }),
       });
 
       try {
         await parseRecipe('https://example.com');
       } catch (error) {
         expect(error).toBeInstanceOf(ApiRequestError);
-        expect((error as ApiRequestError).code).toBe('UNKNOWN_ERROR');
+        expect((error as ApiRequestError).code).toBe('INTERNAL_ERROR');
       }
     });
   });
@@ -106,14 +112,15 @@ describe('API Service', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, data: scaledRecipe }),
+        headers: { get: () => 'application/json' },
+        text: async () => JSON.stringify({ success: true, data: scaledRecipe }),
       });
 
       const result = await scaleRecipe(mockRecipe, scalingOptions);
 
       expect(mockFetch).toHaveBeenCalledWith('/api/recipes/scale', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
         body: JSON.stringify({ recipe: mockRecipe, options: scalingOptions }),
       });
       expect(result.scaling.multiplier).toBe(2);
@@ -122,10 +129,13 @@ describe('API Service', () => {
     it('throws ApiRequestError on failure', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({
-          success: false,
-          error: { code: 'INVALID_MULTIPLIER', message: 'Invalid multiplier' },
-        }),
+        status: 400,
+        headers: { get: () => 'application/json' },
+        text: async () =>
+          JSON.stringify({
+            success: false,
+            error: { code: 'INVALID_MULTIPLIER', message: 'Invalid multiplier' },
+          }),
       });
 
       await expect(scaleRecipe(mockRecipe, { multiplier: -1 })).rejects.toThrow(
@@ -138,13 +148,14 @@ describe('API Service', () => {
     it('returns health status', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, data: { status: 'healthy' } }),
+        headers: { get: () => 'application/json' },
+        text: async () => JSON.stringify({ success: true, data: { status: 'healthy' } }),
       });
 
       const result = await checkHealth();
 
       expect(mockFetch).toHaveBeenCalledWith('/api/health', {
-        headers: { 'Content-Type': 'application/json' },
+        headers: { Accept: 'application/json', 'Content-Type': 'application/json' },
       });
       expect(result.status).toBe('healthy');
     });
@@ -152,10 +163,13 @@ describe('API Service', () => {
     it('throws ApiRequestError when unhealthy', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
-        json: async () => ({
-          success: false,
-          error: { code: 'INTERNAL_ERROR', message: 'Service unavailable' },
-        }),
+        status: 503,
+        headers: { get: () => 'application/json' },
+        text: async () =>
+          JSON.stringify({
+            success: false,
+            error: { code: 'INTERNAL_ERROR', message: 'Service unavailable' },
+          }),
       });
 
       await expect(checkHealth()).rejects.toThrow(ApiRequestError);

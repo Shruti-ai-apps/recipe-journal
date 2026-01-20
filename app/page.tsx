@@ -4,7 +4,7 @@
  * Home page - URL input and recipe display
  */
 
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Recipe, ScaledRecipe, ScalingOptions } from '@/types';
 import UrlInput from '@/components/recipe/UrlInput';
@@ -45,10 +45,104 @@ export default function HomePage() {
   const [cookingTimeAdjustment, setCookingTimeAdjustment] = useState<string | undefined>(undefined);
   const [isAIPowered, setIsAIPowered] = useState(false);
 
+  // Guards against async smart-scale responses updating state for a different recipe.
+  const smartScaleRequestTokenRef = useRef(0);
+  const activeRecipeUrlRef = useRef<string | null>(null);
+  const smartScaleDebounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const smartScaleAbortRef = useRef<AbortController | null>(null);
+
   // Load recent favorites on mount
   useEffect(() => {
     loadRecentFavorites();
   }, []);
+
+  const cancelPendingSmartScale = () => {
+    if (smartScaleDebounceTimerRef.current) {
+      clearTimeout(smartScaleDebounceTimerRef.current);
+      smartScaleDebounceTimerRef.current = null;
+    }
+    if (smartScaleAbortRef.current) {
+      smartScaleAbortRef.current.abort();
+      smartScaleAbortRef.current = null;
+    }
+  };
+
+  const resetSmartScaleState = (tips: string[] = []) => {
+    // Invalidate any in-flight smart scale requests so late responses are ignored
+    smartScaleRequestTokenRef.current += 1;
+
+    cancelPendingSmartScale();
+    setSmartScaleLoading(false);
+    setSmartScaledIngredients(null);
+    setScalingTips(tips);
+    setCookingTimeAdjustment(undefined);
+    setIsAIPowered(false);
+  };
+
+  const scheduleSmartScale = (
+    recipeToScale: Recipe,
+    multiplierToScale: number,
+    fallbackTips: string[],
+    delayMs: number = 250
+  ) => {
+    cancelPendingSmartScale();
+
+    const requestToken = smartScaleRequestTokenRef.current + 1;
+    smartScaleRequestTokenRef.current = requestToken;
+    const recipeUrlAtRequest = recipeToScale.source.url;
+
+    smartScaleDebounceTimerRef.current = setTimeout(async () => {
+      const controller = new AbortController();
+      smartScaleAbortRef.current = controller;
+
+      setSmartScaleLoading(true);
+      try {
+        const smartResult = await smartScaleRecipe(
+          recipeToScale,
+          multiplierToScale,
+          recipeToScale.id,
+          controller.signal
+        );
+
+        // Ignore late responses for a previous recipe or superseded request.
+        if (
+          smartScaleRequestTokenRef.current !== requestToken ||
+          activeRecipeUrlRef.current !== recipeUrlAtRequest
+        ) {
+          return;
+        }
+
+        setSmartScaledIngredients(smartResult.ingredients);
+        setScalingTips(smartResult.tips);
+        setCookingTimeAdjustment(smartResult.cookingTimeAdjustment);
+        setIsAIPowered(smartResult.success);
+      } catch (err) {
+        // Aborted due to debounce/new request; ignore.
+        if (controller.signal.aborted) return;
+
+        console.warn('Smart scaling failed, using regular scaling:', err);
+
+        if (
+          smartScaleRequestTokenRef.current !== requestToken ||
+          activeRecipeUrlRef.current !== recipeUrlAtRequest
+        ) {
+          return;
+        }
+
+        setSmartScaledIngredients(null);
+        setScalingTips(fallbackTips);
+        setCookingTimeAdjustment(undefined);
+        setIsAIPowered(false);
+      } finally {
+        if (
+          smartScaleRequestTokenRef.current === requestToken &&
+          activeRecipeUrlRef.current === recipeUrlAtRequest
+        ) {
+          setSmartScaleLoading(false);
+        }
+      }
+    }, delayMs);
+  };
 
   const loadRecentFavorites = () => {
     const recent = getRecentFavorites(4);
@@ -56,15 +150,18 @@ export default function HomePage() {
   };
 
   const loadSavedRecipe = async (savedRecipe: SavedRecipe) => {
+    activeRecipeUrlRef.current = savedRecipe.source.url;
     setRecipe(savedRecipe);
     setLoading(true);
     setError(null);
+    resetSmartScaleState([]);
 
     try {
       const initialMultiplier = savedRecipe.lastScaledMultiplier || 1;
       setMultiplier(initialMultiplier);
       const scaled = await scaleRecipe(savedRecipe, { multiplier: initialMultiplier });
       setScaledRecipe(scaled);
+      setScalingTips(scaled.scalingTips || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to scale recipe');
     } finally {
@@ -78,14 +175,18 @@ export default function HomePage() {
     setRecipe(null);
     setScaledRecipe(null);
     setMultiplier(1);
+    activeRecipeUrlRef.current = null;
+    resetSmartScaleState([]);
 
     try {
       const parsedRecipe = await parseRecipe(url);
+      activeRecipeUrlRef.current = parsedRecipe.source.url;
       setRecipe(parsedRecipe);
 
       // Apply initial scaling (1x)
       const scaled = await scaleRecipe(parsedRecipe, { multiplier: 1 });
       setScaledRecipe(scaled);
+      setScalingTips(scaled.scalingTips || []);
 
       // Refresh recent favorites
       loadRecentFavorites();
@@ -110,23 +211,7 @@ export default function HomePage() {
 
       // If smart scaling is enabled, also get AI-powered scaling
       if (smartScaleEnabled) {
-        setSmartScaleLoading(true);
-        try {
-          const smartResult = await smartScaleRecipe(recipe, newMultiplier, recipe.id);
-          setSmartScaledIngredients(smartResult.ingredients);
-          setScalingTips(smartResult.tips);
-          setCookingTimeAdjustment(smartResult.cookingTimeAdjustment);
-          setIsAIPowered(smartResult.success);
-        } catch (smartErr) {
-          // Fallback to regular scaling - don't show error since regular scaling worked
-          console.warn('Smart scaling failed, using regular scaling:', smartErr);
-          setSmartScaledIngredients(null);
-          setScalingTips(scaled.scalingTips || []);
-          setCookingTimeAdjustment(undefined);
-          setIsAIPowered(false);
-        } finally {
-          setSmartScaleLoading(false);
-        }
+        scheduleSmartScale(recipe, newMultiplier, scaled.scalingTips || []);
       } else {
         // Clear smart scaling data when disabled
         setSmartScaledIngredients(null);
@@ -146,22 +231,10 @@ export default function HomePage() {
 
     // If enabling and we have a recipe with non-1x multiplier, fetch smart scaling
     if (enabled && recipe && multiplier !== 1) {
-      setSmartScaleLoading(true);
-      try {
-        const smartResult = await smartScaleRecipe(recipe, multiplier, recipe.id);
-        setSmartScaledIngredients(smartResult.ingredients);
-        setScalingTips(smartResult.tips);
-        setCookingTimeAdjustment(smartResult.cookingTimeAdjustment);
-        setIsAIPowered(smartResult.success);
-      } catch (err) {
-        console.warn('Smart scaling failed:', err);
-        setSmartScaledIngredients(null);
-        setIsAIPowered(false);
-      } finally {
-        setSmartScaleLoading(false);
-      }
+      scheduleSmartScale(recipe, multiplier, scaledRecipe?.scalingTips || [], 0);
     } else if (!enabled) {
       // Clear smart scaling data when disabling
+      cancelPendingSmartScale();
       setSmartScaledIngredients(null);
       setScalingTips(scaledRecipe?.scalingTips || []);
       setCookingTimeAdjustment(undefined);

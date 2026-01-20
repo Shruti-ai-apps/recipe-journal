@@ -15,6 +15,11 @@ interface ScalingControlsProps {
 
 const PRESET_MULTIPLIERS = [0.5, 1, 2, 3];
 
+function formatMultiplierLabel(multiplier: number): string {
+  if (multiplier === 0.5) return '1/2x';
+  return `${multiplier}x`;
+}
+
 function ScalingControls({ currentMultiplier, onScale, disabled = false }: ScalingControlsProps) {
   const [customValue, setCustomValue] = useState('');
   const [showCustom, setShowCustom] = useState(false);
@@ -50,7 +55,7 @@ function ScalingControls({ currentMultiplier, onScale, disabled = false }: Scali
             onClick={() => handlePresetClick(multiplier)}
             disabled={disabled}
           >
-            {multiplier}x
+            {formatMultiplierLabel(multiplier)}
           </button>
         ))}
 
@@ -88,7 +93,7 @@ function ScalingControls({ currentMultiplier, onScale, disabled = false }: Scali
       )}
 
       <div className="current-scale">
-        Current: <strong>{currentMultiplier}x</strong>
+        Current: <strong>{formatMultiplierLabel(currentMultiplier)}</strong>
       </div>
     </div>
   );

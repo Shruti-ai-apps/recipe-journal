@@ -17,7 +17,7 @@ import {
   SCALING_TIPS,
   UnitSystem,
 } from '@/types';
-import { decimalToDisplay, convertUnit, UNITS } from '@/constants';
+import { decimalToDisplay, convertUnit, getUnit, UNITS } from '@/constants';
 import { logger } from '@/lib/utils';
 
 export class ScalingService {
@@ -61,6 +61,18 @@ export class ScalingService {
   }
 
   /**
+   * Scale a single ingredient for display, using the same rules as recipe scaling
+   */
+  scaleIngredientForDisplay(
+    ingredient: ParsedIngredient,
+    multiplier: number,
+    targetUnitSystem?: UnitSystem,
+    roundingPrecision: 'exact' | 'friendly' = 'friendly'
+  ): ScaledIngredient {
+    return this.scaleIngredient(ingredient, multiplier, targetUnitSystem, roundingPrecision);
+  }
+
+  /**
    * Scale a single ingredient
    */
   private scaleIngredient(
@@ -79,26 +91,46 @@ export class ScalingService {
       };
     }
 
-    // Scale the quantity
-    const scaledValue = ingredient.quantity.value * multiplier;
+    const originalQuantity = ingredient.quantity;
+
+    // Scale the quantity (support ranges)
+    const scaledValue = originalQuantity.value * multiplier;
+    const scaledValueTo =
+      originalQuantity.type === 'range' && typeof originalQuantity.valueTo === 'number'
+        ? originalQuantity.valueTo * multiplier
+        : undefined;
+
     let scaledUnit = ingredient.unit;
     let finalValue = scaledValue;
+    let finalValueTo = scaledValueTo;
 
     // Convert units if requested
     if (targetUnitSystem && ingredient.unit) {
-      const converted = this.convertToSystem(scaledValue, ingredient.unit, targetUnitSystem);
-      if (converted) {
-        finalValue = converted.value;
-        scaledUnit = converted.unit;
+      const convertedFrom = this.convertToSystem(scaledValue, ingredient.unit, targetUnitSystem);
+      if (convertedFrom) {
+        finalValue = convertedFrom.value;
+        scaledUnit = convertedFrom.unit;
+
+        if (typeof scaledValueTo === 'number') {
+          const convertedTo = convertUnit(scaledValueTo, ingredient.unit, convertedFrom.unit);
+          if (convertedTo !== null) {
+            finalValueTo = convertedTo;
+          }
+        }
       }
     }
 
     // Create scaled quantity with rounding
-    const scaledQuantity = this.createScaledQuantity(
-      finalValue,
-      ingredient.quantity.value,
-      roundingPrecision
-    );
+    const scaledQuantity =
+      originalQuantity.type === 'range' && typeof originalQuantity.valueTo === 'number' && typeof finalValueTo === 'number'
+        ? this.createScaledQuantityRange(
+            finalValue,
+            finalValueTo,
+            originalQuantity.value,
+            originalQuantity.valueTo,
+            roundingPrecision
+          )
+        : this.createScaledQuantity(finalValue, originalQuantity.value, roundingPrecision);
 
     // Generate display text
     const displayText = this.generateDisplayText(
@@ -155,6 +187,7 @@ export class ScalingService {
     } else {
       // Exact mode - still round to reasonable precision
       displayValue = value.toFixed(3).replace(/\.?0+$/, '');
+      wasRounded = displayValue !== value.toString();
     }
 
     return {
@@ -162,6 +195,69 @@ export class ScalingService {
       displayValue,
       wasRounded,
       originalValue,
+    };
+  }
+
+  /**
+   * Create a scaled range quantity with appropriate rounding
+   */
+  private createScaledQuantityRange(
+    valueFrom: number,
+    valueTo: number,
+    originalValueFrom: number,
+    originalValueTo: number,
+    roundingPrecision: 'exact' | 'friendly'
+  ): ScaledQuantity {
+    const maxValue = Math.max(valueFrom, valueTo);
+
+    // Check for very small amounts (use upper bound)
+    if (maxValue <= QUANTITY_THRESHOLDS.TO_TASTE) {
+      return {
+        value: valueFrom,
+        valueTo,
+        displayValue: 'a pinch',
+        displayModifier: 'to taste',
+        wasRounded: true,
+        originalValue: originalValueFrom,
+        originalValueTo,
+      };
+    }
+
+    if (maxValue <= QUANTITY_THRESHOLDS.PINCH) {
+      return {
+        value: valueFrom,
+        valueTo,
+        displayValue: 'a pinch',
+        wasRounded: true,
+        originalValue: originalValueFrom,
+        originalValueTo,
+      };
+    }
+
+    let fromDisplay: string;
+    let toDisplay: string;
+
+    if (roundingPrecision === 'friendly') {
+      fromDisplay = decimalToDisplay(valueFrom);
+      toDisplay = decimalToDisplay(valueTo);
+    } else {
+      fromDisplay = valueFrom.toFixed(3).replace(/\.?0+$/, '');
+      toDisplay = valueTo.toFixed(3).replace(/\.?0+$/, '');
+    }
+
+    const displayValue =
+      fromDisplay === toDisplay ? fromDisplay : `${fromDisplay}-${toDisplay}`;
+
+    const wasRounded =
+      fromDisplay !== valueFrom.toString() || toDisplay !== valueTo.toString();
+
+    return {
+      value: valueFrom,
+      valueTo,
+      displayValue,
+      wasRounded,
+      originalValue: originalValueFrom,
+      originalValueTo,
     };
   }
 
@@ -190,7 +286,59 @@ export class ScalingService {
       return null;
     }
 
-    return { value: converted, unit: targetUnit };
+    return this.normalizeConvertedValue(converted, targetUnit, targetSystem);
+  }
+
+  private normalizeConvertedValue(
+    value: number,
+    unit: string,
+    targetSystem: UnitSystem
+  ): { value: number; unit: string } {
+    if (!Number.isFinite(value) || value <= 0) {
+      return { value, unit };
+    }
+
+    // Metric upgrades: mL -> L, g -> kg
+    if (targetSystem === UnitSystem.METRIC) {
+      if (unit === 'milliliter' && value >= 1000) {
+        const upgraded = convertUnit(value, 'milliliter', 'liter');
+        if (upgraded !== null) return { value: upgraded, unit: 'liter' };
+      }
+
+      if (unit === 'gram' && value >= 1000) {
+        const upgraded = convertUnit(value, 'gram', 'kilogram');
+        if (upgraded !== null) return { value: upgraded, unit: 'kilogram' };
+      }
+
+      return { value, unit };
+    }
+
+    // US upgrades: cups -> quarts -> gallons, ounces -> pounds (for large quantities)
+    if (targetSystem === UnitSystem.US) {
+      if (unit === 'cup' && value >= 16) {
+        const upgraded = convertUnit(value, 'cup', 'gallon');
+        if (upgraded !== null) return { value: upgraded, unit: 'gallon' };
+      }
+
+      if (unit === 'cup' && value >= 4) {
+        const upgraded = convertUnit(value, 'cup', 'quart');
+        if (upgraded !== null) return { value: upgraded, unit: 'quart' };
+      }
+
+      if (unit === 'quart' && value >= 4) {
+        const upgraded = convertUnit(value, 'quart', 'gallon');
+        if (upgraded !== null) return { value: upgraded, unit: 'gallon' };
+      }
+
+      if (unit === 'ounce' && value >= 32) {
+        const upgraded = convertUnit(value, 'ounce', 'pound');
+        if (upgraded !== null) return { value: upgraded, unit: 'pound' };
+      }
+
+      return { value, unit };
+    }
+
+    return { value, unit };
   }
 
   /**
@@ -205,6 +353,10 @@ export class ScalingService {
       cup: { metric: 'milliliter' },
       tablespoon: { metric: 'milliliter' },
       teaspoon: { metric: 'milliliter' },
+      fluidOunce: { metric: 'milliliter' },
+      pint: { metric: 'milliliter' },
+      quart: { metric: 'milliliter' },
+      gallon: { metric: 'milliliter' },
       ounce: { metric: 'gram' },
       pound: { metric: 'gram' },
       milliliter: { us: 'cup' },
@@ -228,6 +380,11 @@ export class ScalingService {
   ): string {
     const parts: string[] = [];
 
+    const quantityForGrammar = scaledQuantity.valueTo ?? scaledQuantity.value;
+    const omitUnit =
+      scaledQuantity.displayValue === 'a pinch' ||
+      scaledQuantity.displayModifier === 'to taste';
+
     // Add quantity
     if (scaledQuantity.displayModifier) {
       parts.push(`${scaledQuantity.displayValue} (${scaledQuantity.displayModifier})`);
@@ -236,15 +393,10 @@ export class ScalingService {
     }
 
     // Add unit
-    if (unit) {
-      // Pluralize if needed
-      const quantity = scaledQuantity.value;
-      let unitDisplay = unit;
-      if (quantity > 1 && !unit.endsWith('s')) {
-        unitDisplay = unit + 's';
-      } else if (quantity <= 1 && unit.endsWith('s')) {
-        unitDisplay = unit.slice(0, -1);
-      }
+    if (unit && !omitUnit) {
+      const unitDef = getUnit(unit);
+      const unitName = unitDef?.name || unit;
+      const unitDisplay = this.pluralizeUnit(unitName, quantityForGrammar);
       parts.push(unitDisplay);
     }
 
@@ -262,6 +414,30 @@ export class ScalingService {
     }
 
     return parts.join(' ').replace(/\s+,/g, ',').replace(/\s+/g, ' ').trim();
+  }
+
+  private pluralizeUnit(unitName: string, quantity: number): string {
+    if (quantity <= 1) {
+      // Best-effort singularization (for units already pluralized)
+      if (unitName.endsWith('s') && !unitName.endsWith('ss')) {
+        return unitName.slice(0, -1);
+      }
+      return unitName;
+    }
+
+    // Irregular/edge cases
+    if (unitName === 'dash') return 'dashes';
+    if (unitName === 'pinch') return 'pinches';
+
+    // Pluralize last word for multi-word units (e.g., "fluid ounce" -> "fluid ounces")
+    if (unitName.includes(' ')) {
+      const words = unitName.split(' ');
+      const last = words[words.length - 1];
+      const pluralLast = last.endsWith('s') ? last : `${last}s`;
+      return [...words.slice(0, -1), pluralLast].join(' ');
+    }
+
+    return unitName.endsWith('s') ? unitName : `${unitName}s`;
   }
 
   /**

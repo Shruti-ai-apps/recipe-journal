@@ -22,6 +22,7 @@ import {
   failOperation,
   queueOperation,
   getPendingCount,
+  clearRecipeQueue,
 } from './OfflineQueue';
 import { resolveConflict, getConflictDetails } from './ConflictResolver';
 
@@ -44,6 +45,7 @@ export type SyncEventType =
   | 'sync-completed'
   | 'sync-failed'
   | 'conflict-resolved'
+  | 'id-remapped'
   | 'operation-completed';
 
 /**
@@ -154,6 +156,14 @@ export async function getAllFromOffline(userId: string): Promise<OfflineRecipe[]
     .toArray();
 }
 
+async function getAllFromOfflineForSync(userId: string): Promise<OfflineRecipe[]> {
+  if (!isIndexedDBAvailable()) return [];
+
+  const db = getOfflineDb();
+  // Include deleted rows so sync logic can prevent "resurrection" after an offline delete.
+  return db.recipes.where('user_id').equals(userId).toArray();
+}
+
 /**
  * Delete recipe from offline storage
  */
@@ -215,6 +225,28 @@ export async function updateRecipeWithSync(
   updates: Partial<DbRecipe>
 ): Promise<DbRecipe | null> {
   if (isOnline()) {
+    // If this recipe was created offline and hasn't been synced yet, updating in cloud will fail.
+    // Update locally and merge into the pending create operation.
+    if (isIndexedDBAvailable()) {
+      const db = getOfflineDb();
+      const existing = await db.recipes.get(id);
+      if (existing?._offlineCreated) {
+        const now = new Date().toISOString();
+        const updatedRecipe: OfflineRecipe = {
+          ...existing,
+          ...updates,
+          updated_at: now,
+          _offlineModified: true,
+          _localUpdatedAt: now,
+        };
+
+        await db.recipes.put(updatedRecipe);
+        await queueOperation('update', id, userId, updates as Partial<OfflineRecipe>);
+
+        return updatedRecipe;
+      }
+    }
+
     // Online: update in cloud
     const result = await updateRecipe(id, updates);
     if (result.data) {
@@ -254,10 +286,23 @@ export async function deleteRecipeWithSync(
   userId: string
 ): Promise<boolean> {
   if (isOnline()) {
+    // If this recipe was created offline and hasn't been synced yet, deleting in cloud will fail.
+    // Delete locally and clear any pending operations.
+    if (isIndexedDBAvailable()) {
+      const db = getOfflineDb();
+      const existing = await db.recipes.get(id);
+      if (existing?._offlineCreated) {
+        await db.recipes.delete(id);
+        await clearRecipeQueue(userId, id);
+        return true;
+      }
+    }
+
     // Online: soft delete in cloud
     const result = await deleteRecipe(id);
     if (!result.error) {
       await deleteFromOffline(id);
+      await clearRecipeQueue(userId, id);
       return true;
     }
     return false;
@@ -273,7 +318,7 @@ export async function deleteRecipeWithSync(
   // If it was created offline and never synced, just delete it
   if (existing._offlineCreated) {
     await db.recipes.delete(id);
-    // Remove any pending create operation
+    await clearRecipeQueue(userId, id);
     return true;
   }
 
@@ -335,6 +380,7 @@ export async function syncToCloud(userId: string): Promise<SyncResult> {
                   _offlineCreated: false,
                   _offlineModified: false,
                 });
+                emitEvent('id-remapped', { oldId: op.recipeId, newId: createResult.data.id, recipe: createResult.data });
                 result.uploaded++;
               } else {
                 throw new Error(createResult.error?.message || 'Failed to create recipe');
@@ -422,7 +468,7 @@ export async function syncFromCloud(userId: string): Promise<SyncResult> {
     const cloudRecipes = cloudResult.data;
 
     // Get local recipes
-    const localRecipes = await getAllFromOffline(userId);
+    const localRecipes = await getAllFromOfflineForSync(userId);
     const localMap = new Map(localRecipes.map((r) => [r.id, r]));
 
     // Process cloud recipes

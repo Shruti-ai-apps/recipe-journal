@@ -12,6 +12,9 @@ interface FavoritesListProps {
   recipes: SavedRecipe[];
   onSelect: (recipe: SavedRecipe) => void;
   onRemove: (recipe: SavedRecipe) => void;
+  selectionMode?: boolean;
+  selectedIds?: Set<string>;
+  onToggleSelected?: (recipe: SavedRecipe) => void;
   emptyMessage?: string;
 }
 
@@ -19,6 +22,9 @@ function FavoritesList({
   recipes,
   onSelect,
   onRemove,
+  selectionMode = false,
+  selectedIds,
+  onToggleSelected,
   emptyMessage = 'No saved recipes yet',
 }: FavoritesListProps) {
   if (recipes.length === 0) {
@@ -49,6 +55,9 @@ function FavoritesList({
           recipe={recipe}
           onSelect={onSelect}
           onRemove={onRemove}
+          selectionMode={selectionMode}
+          selected={selectedIds?.has(recipe.id ?? '') ?? false}
+          onToggleSelected={onToggleSelected}
         />
       ))}
     </div>

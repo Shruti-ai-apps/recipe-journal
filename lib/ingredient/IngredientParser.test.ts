@@ -55,13 +55,27 @@ describe('IngredientParser', () => {
       });
 
       it('parses text fractions in mixed numbers', () => {
-        // Note: Standalone text fractions like "1/2" are captured via the mixed number pattern
-        // The regex matches digits followed by optional space and fraction
         const result = parser.parseIngredient('2 1/4 cups butter');
 
         expect(result.quantity?.value).toBe(2.25);
         expect(result.unit).toBe('cup');
         expect(result.ingredient).toBe('butter');
+      });
+
+      it('parses slash fractions without whitespace', () => {
+        const result = parser.parseIngredient('1/2 cup Sugar');
+
+        expect(result.quantity?.value).toBe(0.5);
+        expect(result.unit).toBe('cup');
+        expect(result.ingredient).toBe('Sugar');
+      });
+
+      it('parses slash fractions for small units', () => {
+        const result = parser.parseIngredient('1/4 tsp Cardamom powder');
+
+        expect(result.quantity?.value).toBe(0.25);
+        expect(result.unit).toBe('teaspoon');
+        expect(result.ingredient).toBe('Cardamom powder');
       });
 
       it('parses mixed numbers with unicode fractions', () => {

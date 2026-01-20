@@ -30,10 +30,20 @@ export async function queueOperation(
   const db = getOfflineDb();
 
   // Check if there's already a pending operation for this recipe
-  const existingOp = await db.syncQueue
-    .where('recipeId')
-    .equals(recipeId)
-    .first();
+  let existingOp: SyncOperation | undefined;
+  try {
+    existingOp = await db.syncQueue
+      .where('[userId+recipeId]')
+      .equals([userId, recipeId])
+      .first();
+  } catch {
+    // Backwards compatibility for older IndexedDB versions without the compound index
+    existingOp = await db.syncQueue
+      .where('recipeId')
+      .equals(recipeId)
+      .and((op) => op.userId === userId)
+      .first();
+  }
 
   if (existingOp) {
     // Merge operations intelligently
@@ -144,6 +154,34 @@ export async function completeOperation(operationId: number): Promise<void> {
 
   const db = getOfflineDb();
   await db.syncQueue.delete(operationId);
+}
+
+/**
+ * Clear any pending operation(s) for a recipe.
+ *
+ * In normal operation there should be at most one queued op per (userId, recipeId),
+ * but older IndexedDB versions or partial migrations may leave duplicates.
+ */
+export async function clearRecipeQueue(
+  userId: string,
+  recipeId: string
+): Promise<number> {
+  if (!isIndexedDBAvailable()) return 0;
+
+  const db = getOfflineDb();
+
+  try {
+    return await db.syncQueue
+      .where('[userId+recipeId]')
+      .equals([userId, recipeId])
+      .delete();
+  } catch {
+    return await db.syncQueue
+      .where('recipeId')
+      .equals(recipeId)
+      .and((op) => op.userId === userId)
+      .delete();
+  }
 }
 
 /**

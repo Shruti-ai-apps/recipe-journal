@@ -15,8 +15,27 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const body = await request.json();
-    const { url } = body;
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json<ParseRecipeResponse>(
+        {
+          success: false,
+          error: {
+            code: ErrorCode.VALIDATION_ERROR,
+            message: 'Invalid JSON body',
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    const { url } = body as { url?: unknown };
 
     // Validate URL
     if (!url || typeof url !== 'string') {

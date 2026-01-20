@@ -13,7 +13,8 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,css,json}\"",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "verify:scaling": "tsx scripts/verify-scaling.ts"
   },
   "dependencies": {
     "@google/genai": "^1.36.0",
@@ -45,10 +46,11 @@
     "jest-environment-jsdom": "^29.7.0",
     "prettier": "^3.2.5",
     "ts-jest": "^29.1.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.3.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=20.0.0"
   },
   "repository": {
     "type": "git",

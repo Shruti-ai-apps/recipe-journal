@@ -11,8 +11,6 @@ import { Recipe, ServingInfo } from './recipe.types';
 export interface ScalingOptions {
   /** Multiplier to apply (e.g., 0.5, 1, 2, 3) */
   multiplier: number;
-  /** Alternative: scale to specific number of servings */
-  targetServings?: number;
   /** Convert units to specific system while scaling */
   targetUnitSystem?: UnitSystem;
   /** How to round the results */
@@ -25,6 +23,8 @@ export interface ScalingOptions {
 export interface ScaledQuantity {
   /** Numeric value after scaling */
   value: number;
+  /** Upper bound for range quantities (e.g., "1-2 cups") */
+  valueTo?: number;
   /** Human-readable display (e.g., "1/3", "pinch", "2") */
   displayValue: string;
   /** Modifier for very small amounts (e.g., "to taste", "as needed") */
@@ -33,6 +33,8 @@ export interface ScaledQuantity {
   wasRounded: boolean;
   /** Original value before scaling */
   originalValue: number;
+  /** Original upper bound for range quantities */
+  originalValueTo?: number;
 }
 
 /**

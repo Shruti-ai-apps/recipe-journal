@@ -40,6 +40,7 @@ import {
 } from '@/services/migration';
 import {
   isOnline,
+  addSyncListener,
   createRecipeWithSync,
   updateRecipeWithSync,
   deleteRecipeWithSync,
@@ -66,7 +67,10 @@ interface FavoritesContextType {
 
   // Actions
   loadFavorites: () => Promise<void>;
-  addFavorite: (recipe: Recipe, options?: { notes?: string; userTags?: string[] }) => Promise<SavedRecipe | null>;
+  addFavorite: (
+    recipe: Recipe,
+    options?: { notes?: string; userTags?: string[]; multiplier?: number }
+  ) => Promise<SavedRecipe | null>;
   removeFavorite: (id: string) => Promise<boolean>;
   removeFavoriteByUrl: (url: string) => Promise<boolean>;
   isFavorite: (sourceUrl: string) => Promise<boolean>;
@@ -121,7 +125,7 @@ function dbRecipeToSavedRecipe(dbRecipe: DbRecipe): SavedRecipe {
 /**
  * Convert a Recipe to cloud format for saving
  */
-function recipeToDbFormat(recipe: Recipe): {
+function recipeToDbFormat(recipe: Recipe, multiplier?: number): {
   title: string;
   source_url: string;
   source_domain: string;
@@ -162,7 +166,7 @@ function recipeToDbFormat(recipe: Recipe): {
     notes: null,
     tags: recipe.tags || [],
     is_favorite: true,
-    last_scale_multiplier: 1,
+    last_scale_multiplier: multiplier ?? 1,
     last_viewed_at: new Date().toISOString(),
   };
 }
@@ -225,6 +229,37 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     }
   }, [authLoading, isLoggedIn]);
 
+  // Keep UI state consistent when offline-created IDs are remapped to cloud IDs.
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    const unsubscribe = addSyncListener((event, data) => {
+      if (event !== 'id-remapped' || !data) return;
+
+      const oldId = data.oldId;
+      const recipe = data.recipe as DbRecipe | undefined;
+
+      if (typeof oldId !== 'string' || !recipe) return;
+
+      const saved = dbRecipeToSavedRecipe(recipe);
+
+      setFavorites((prev) => {
+        const existingIndex = prev.findIndex((r) => r.id === oldId);
+        if (existingIndex < 0) return prev;
+
+        // If the new id already exists, drop the old entry.
+        const alreadyHasNew = prev.some((r) => r.id === saved.id);
+        const next = prev.filter((r) => r.id !== oldId);
+        if (!alreadyHasNew) {
+          next.unshift(saved);
+        }
+        return next;
+      });
+    });
+
+    return unsubscribe;
+  }, [isLoggedIn]);
+
   const loadFavorites = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -284,12 +319,12 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
   const addFavorite = useCallback(
     async (
       recipe: Recipe,
-      options?: { notes?: string; userTags?: string[] }
+      options?: { notes?: string; userTags?: string[]; multiplier?: number }
     ): Promise<SavedRecipe | null> => {
       try {
         if (isLoggedIn && user) {
           // Save with sync support (handles online/offline)
-          const dbRecipe = recipeToDbFormat(recipe);
+          const dbRecipe = recipeToDbFormat(recipe, options?.multiplier);
           if (options?.notes) {
             dbRecipe.notes = options.notes;
           }
@@ -310,6 +345,7 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
           const savedRecipe = saveLocalFavorite(recipe, {
             notes: options?.notes,
             userTags: options?.userTags,
+            multiplier: options?.multiplier,
           });
           setFavorites((prev) => {
             const exists = prev.some((r) => r.source.url === recipe.source.url);
@@ -333,25 +369,78 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
 
   const removeFavorite = useCallback(
     async (id: string): Promise<boolean> => {
+      setError(null);
+
+      let removed: SavedRecipe | undefined;
+      let removedIndex = -1;
+
+      // Optimistically remove from UI for snappy interactions.
+      setFavorites((prev) => {
+        removedIndex = prev.findIndex((r) => r.id === id);
+        if (removedIndex >= 0) {
+          removed = prev[removedIndex];
+        }
+        return prev.filter((r) => r.id !== id);
+      });
+
       try {
         if (isLoggedIn && user) {
           // Delete with sync support
           const success = await deleteRecipeWithSync(id, user.id);
           if (success) {
-            setFavorites((prev) => prev.filter((r) => r.id !== id));
             await updatePendingCount();
+            return true;
           }
-          return success;
+
+          // Restore on failure.
+          if (removed) {
+            setFavorites((prev) => {
+              if (prev.some((r) => r.id === id)) return prev;
+              const next = [...prev];
+              const insertAt = Math.min(
+                removedIndex >= 0 ? removedIndex : 0,
+                next.length
+              );
+              next.splice(insertAt, 0, removed!);
+              return next;
+            });
+          }
+
+          setError('Failed to remove recipe');
+          return false;
         } else {
           // Remove from localStorage
           const success = removeLocalFavorite(id);
-          if (success) {
-            setFavorites((prev) => prev.filter((r) => r.id !== id));
+          if (!success && removed) {
+            setFavorites((prev) => {
+              if (prev.some((r) => r.id === id)) return prev;
+              const next = [...prev];
+              const insertAt = Math.min(
+                removedIndex >= 0 ? removedIndex : 0,
+                next.length
+              );
+              next.splice(insertAt, 0, removed!);
+              return next;
+            });
           }
           return success;
         }
       } catch (err) {
         console.error('Failed to remove favorite:', err);
+
+        if (removed) {
+          setFavorites((prev) => {
+            if (prev.some((r) => r.id === id)) return prev;
+            const next = [...prev];
+            const insertAt = Math.min(
+              removedIndex >= 0 ? removedIndex : 0,
+              next.length
+            );
+            next.splice(insertAt, 0, removed!);
+            return next;
+          });
+        }
+
         setError(err instanceof Error ? err.message : 'Failed to remove recipe');
         return false;
       }

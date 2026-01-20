@@ -8,6 +8,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback, useMemo } from 'react';
 import { User, Session, AuthError, AuthChangeEvent } from '@supabase/supabase-js';
 import { createClient, isSupabaseConfigured } from '@/lib/supabase/client';
+import { clearOfflineData } from '@/lib/offline';
 
 interface AuthContextType {
   user: User | null;
@@ -87,6 +88,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       options: {
         // Don't create user if they don't exist - they need to verify first
         shouldCreateUser: true,
+        // Use the app callback route so the magic link opens in the current tab and completes login.
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
       },
     });
 
@@ -126,6 +129,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!supabase) return { error: notConfiguredError };
     setLoading(true);
     const { error } = await supabase.auth.signOut();
+
+    // Clear offline IndexedDB caches/queues to avoid cross-user contamination on shared devices.
+    try {
+      await clearOfflineData();
+    } catch {
+      // ignore
+    }
+
     setLoading(false);
     return { error };
   }, [supabase]);
