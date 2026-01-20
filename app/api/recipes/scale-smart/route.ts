@@ -65,6 +65,12 @@ function checkRateLimit(identifier: string): boolean {
 }
 
 function getClientIdentifier(request: NextRequest): string {
+  // Prefer the platform-provided IP when available.
+  const directIp = (request as unknown as { ip?: unknown }).ip;
+  if (typeof directIp === 'string' && directIp.trim()) {
+    return directIp.trim();
+  }
+
   return (
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     request.headers.get('x-real-ip') ||
@@ -117,7 +123,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse request body
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json<SmartScaleRecipeResponse>(
+        {
+          success: false,
+          error: {
+            code: ErrorCode.VALIDATION_ERROR,
+            message: 'Invalid JSON body',
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+            aiPowered: false,
+            cached: false,
+          },
+        },
+        { status: 400 }
+      );
+    }
     const { recipe, multiplier, recipeId } = body as {
       recipe: Recipe;
       multiplier: number;

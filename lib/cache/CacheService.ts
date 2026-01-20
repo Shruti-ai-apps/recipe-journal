@@ -17,18 +17,21 @@ export class CacheService {
   private readonly ttlMs: number;
   private readonly enabled: boolean;
   private readonly maxEntries: number;
-  private cleanupInterval: ReturnType<typeof setInterval> | null = null;
+  private lastCleanupAt = 0;
+  private readonly cleanupEveryMs = 60_000;
 
   constructor(ttlMs: number = DEFAULT_TTL_MS, enabled: boolean = true, maxEntries: number = 5000) {
     this.ttlMs = ttlMs;
     this.enabled = enabled;
     this.maxEntries = Math.max(0, maxEntries);
+  }
 
-    // Start cleanup interval
-    if (this.enabled && typeof window === 'undefined') {
-      // Only run cleanup in server environment
-      this.cleanupInterval = setInterval(() => this.cleanup(), 60000); // Every minute
-    }
+  private maybeCleanup(): void {
+    if (!this.enabled) return;
+    const now = Date.now();
+    if (now - this.lastCleanupAt < this.cleanupEveryMs) return;
+    this.lastCleanupAt = now;
+    this.cleanup();
   }
 
   /**
@@ -36,6 +39,8 @@ export class CacheService {
    */
   get<T>(key: string): T | undefined {
     if (!this.enabled) return undefined;
+
+    this.maybeCleanup();
 
     const entry = this.cache.get(key);
     if (!entry) return undefined;
@@ -53,6 +58,8 @@ export class CacheService {
    */
   set<T>(key: string, value: T, ttlMs?: number): void {
     if (!this.enabled) return;
+
+    this.maybeCleanup();
 
     const expiresAt = Date.now() + (ttlMs || this.ttlMs);
     this.cache.set(key, { value, expiresAt });
@@ -117,10 +124,8 @@ export class CacheService {
    * Stop the cleanup interval (for graceful shutdown)
    */
   destroy(): void {
-    if (this.cleanupInterval) {
-      clearInterval(this.cleanupInterval);
-      this.cleanupInterval = null;
-    }
+    // No interval is used; keep for API compatibility / explicit cleanup.
+    this.cache.clear();
   }
 }
 

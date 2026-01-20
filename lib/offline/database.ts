@@ -61,6 +61,12 @@ class RecipeJournalDB extends Dexie {
       // Auto-increment id, indexes on operation type and created time
       syncQueue: '++id, operation, userId, recipeId, createdAt',
     });
+
+    // Add compound index for safe per-user queue merges
+    this.version(2).stores({
+      recipes: 'id, user_id, title, *tags, updated_at, is_deleted',
+      syncQueue: '++id, [userId+recipeId], operation, userId, recipeId, createdAt',
+    });
   }
 }
 

@@ -8,6 +8,7 @@ import {
   ScalingOptions,
   ApiError,
   SmartScaleData,
+  ErrorCode,
 } from '@/types';
 
 const API_BASE_URL = '/api';
@@ -36,26 +37,58 @@ async function apiFetch<T>(
 ): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
 
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
+  let response: Response;
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    });
+  } catch (error) {
+    throw new ApiRequestError({
+      code: ErrorCode.NETWORK_ERROR,
+      message: error instanceof Error ? error.message : 'Network error',
+    });
+  }
 
-  const data = await response.json();
+  const contentType = response.headers.get('content-type') || '';
+  const rawText = await response.text().catch(() => '');
 
-  if (!response.ok || !data.success) {
+  let parsed: any = null;
+  if (rawText && (contentType.includes('application/json') || rawText.trim().startsWith('{') || rawText.trim().startsWith('['))) {
+    try {
+      parsed = JSON.parse(rawText);
+    } catch {
+      parsed = null;
+    }
+  }
+
+  const data = parsed as { success?: boolean; data?: T; error?: ApiError } | null;
+
+  if (!response.ok) {
     throw new ApiRequestError(
-      data.error || {
-        code: 'UNKNOWN_ERROR',
-        message: 'An unexpected error occurred',
+      data?.error || {
+        code: ErrorCode.INTERNAL_ERROR,
+        message: `Request failed (HTTP ${response.status})`,
+        details: rawText ? { status: response.status, bodyPreview: rawText.slice(0, 500) } : { status: response.status },
       }
     );
   }
 
-  return data.data;
+  if (!data || data.success !== true) {
+    throw new ApiRequestError(
+      data?.error || {
+        code: ErrorCode.INTERNAL_ERROR,
+        message: 'An unexpected error occurred',
+        details: rawText ? { bodyPreview: rawText.slice(0, 500) } : undefined,
+      }
+    );
+  }
+
+  return data.data as T;
 }
 
 /**

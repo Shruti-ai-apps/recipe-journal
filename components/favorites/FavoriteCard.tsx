@@ -11,9 +11,19 @@ interface FavoriteCardProps {
   recipe: SavedRecipe;
   onSelect: (recipe: SavedRecipe) => void;
   onRemove: (recipe: SavedRecipe) => void;
+  selectionMode?: boolean;
+  selected?: boolean;
+  onToggleSelected?: (recipe: SavedRecipe) => void;
 }
 
-function FavoriteCard({ recipe, onSelect, onRemove }: FavoriteCardProps) {
+function FavoriteCard({
+  recipe,
+  onSelect,
+  onRemove,
+  selectionMode = false,
+  selected = false,
+  onToggleSelected,
+}: FavoriteCardProps) {
   const formatDate = (dateString: string): string => {
     const date = new Date(dateString);
     const now = new Date();
@@ -41,8 +51,49 @@ function FavoriteCard({ recipe, onSelect, onRemove }: FavoriteCardProps) {
     onRemove(recipe);
   };
 
+  const handleToggleSelected = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleSelected?.(recipe);
+  };
+
+  const handleCardClick = () => {
+    if (selectionMode) {
+      onToggleSelected?.(recipe);
+      return;
+    }
+    onSelect(recipe);
+  };
+
   return (
-    <article className="favorite-card" onClick={() => onSelect(recipe)}>
+    <article
+      className={[
+        'favorite-card',
+        selectionMode ? 'favorite-card--selectable' : '',
+        selectionMode && selected ? 'favorite-card--selected' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      onClick={handleCardClick}
+    >
+      {selectionMode && (
+        <button
+          type="button"
+          className="favorite-card__select"
+          onClick={handleToggleSelected}
+          aria-pressed={selected}
+          aria-label={selected ? 'Deselect recipe' : 'Select recipe'}
+          title={selected ? 'Deselect' : 'Select'}
+        >
+          <span className="favorite-card__select-box" aria-hidden="true">
+            {selected && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+          </span>
+        </button>
+      )}
+
       {recipe.image ? (
         <div className="favorite-card__image">
           <img src={recipe.image} alt={recipe.title} loading="lazy" />

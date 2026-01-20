@@ -28,30 +28,39 @@ function ScalingTips({
   }
 
   return (
-    <div className="scaling-tips">
-      <h4 className="scaling-tips-title">
-        <span className="scaling-tips-icon">💡</span>
-        Scaling Tips
+    <details className="scaling-tips" open>
+      <summary className="scaling-tips-summary">
+        <span className="scaling-tips-title">
+          <span className="scaling-tips-icon" aria-hidden="true">💡</span>
+          <span>Scaling Tips</span>
+        </span>
         {isAIPowered && <span className="scaling-tips-ai-badge">AI</span>}
-      </h4>
+        <span className="scaling-tips-chevron" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </span>
+      </summary>
 
-      {cookingTimeAdjustment && (
-        <div className="scaling-tips-time">
-          <span className="scaling-tips-time-icon">⏱️</span>
-          <span className="scaling-tips-time-text">{cookingTimeAdjustment}</span>
-        </div>
-      )}
+      <div className="scaling-tips-body">
+        {cookingTimeAdjustment && (
+          <div className="scaling-tips-time">
+            <span className="scaling-tips-time-icon" aria-hidden="true">⏱️</span>
+            <span className="scaling-tips-time-text">{cookingTimeAdjustment}</span>
+          </div>
+        )}
 
-      {tips.length > 0 && (
-        <ul className="scaling-tips-list">
-          {tips.map((tip, index) => (
-            <li key={index} className="scaling-tips-item">
-              {tip}
-            </li>
-          ))}
-        </ul>
-      )}
-    </div>
+        {tips.length > 0 && (
+          <ul className="scaling-tips-list">
+            {tips.map((tip, index) => (
+              <li key={index} className="scaling-tips-item">
+                {tip}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </details>
   );
 }
 

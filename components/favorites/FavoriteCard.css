@@ -16,6 +16,19 @@
   overflow: hidden;
 }
 
+.favorite-card--selectable {
+  cursor: pointer;
+}
+
+.favorite-card--selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 8px 24px rgba(155, 98, 54, 0.14);
+}
+
+.favorite-card--selected::before {
+  opacity: 0.55;
+}
+
 .favorite-card::before {
   content: '';
   position: absolute;
@@ -214,6 +227,53 @@
 }
 
 .favorite-card__remove svg {
+  width: 16px;
+  height: 16px;
+}
+
+.favorite-card__select {
+  position: absolute;
+  top: var(--spacing-sm);
+  left: var(--spacing-sm);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  z-index: 3;
+  transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.favorite-card__select:hover {
+  transform: scale(1.06);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.favorite-card__select-box {
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  border: 2px solid var(--color-border-strong);
+  background: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+
+.favorite-card--selected .favorite-card__select-box {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.favorite-card__select-box svg {
   width: 16px;
   height: 16px;
 }

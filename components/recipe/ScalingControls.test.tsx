@@ -16,7 +16,7 @@ describe('ScalingControls', () => {
       const buttons = screen.getAllByRole('button');
       const buttonTexts = buttons.map((btn) => btn.textContent);
 
-      expect(buttonTexts).toContain('0.5x');
+      expect(buttonTexts).toContain('1/2x');
       expect(buttonTexts).toContain('1x');
       expect(buttonTexts).toContain('2x');
       expect(buttonTexts).toContain('3x');
@@ -58,7 +58,7 @@ describe('ScalingControls', () => {
     it('calls onScale with 0.5 when half button clicked', async () => {
       render(<ScalingControls currentMultiplier={1} onScale={mockOnScale} />);
 
-      await userEvent.click(screen.getByText('0.5x'));
+      await userEvent.click(screen.getByText('1/2x'));
 
       expect(mockOnScale).toHaveBeenCalledWith(0.5);
     });

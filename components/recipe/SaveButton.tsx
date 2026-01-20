@@ -4,9 +4,10 @@
  * Save/Unsave button component for recipes
  */
 
-import { useState, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Recipe } from '@/types';
 import { isFavorite, saveFavorite, removeFavoriteByUrl } from '../../services/favorites';
+import FavoritesContext from '@/contexts/FavoritesContext';
 import './SaveButton.css';
 
 interface SaveButtonProps {
@@ -24,24 +25,63 @@ function SaveButton({
   size = 'medium',
   showLabel = true,
 }: SaveButtonProps) {
+  const favoritesContext = useContext(FavoritesContext);
   const [saved, setSaved] = useState<boolean>(false);
   const [animating, setAnimating] = useState<boolean>(false);
 
   useEffect(() => {
-    setSaved(isFavorite(recipe.source.url));
-  }, [recipe.source.url]);
+    let canceled = false;
 
-  const handleClick = () => {
+    const run = async () => {
+      if (favoritesContext) {
+        const isSaved = await favoritesContext.isFavorite(recipe.source.url);
+        if (!canceled) setSaved(isSaved);
+        return;
+      }
+
+      setSaved(isFavorite(recipe.source.url));
+    };
+
+    run();
+
+    return () => {
+      canceled = true;
+    };
+  }, [recipe.source.url, favoritesContext]);
+
+  const handleClick = async () => {
     setAnimating(true);
 
-    if (saved) {
-      removeFavoriteByUrl(recipe.source.url);
-      setSaved(false);
-      onSaveChange?.(false);
-    } else {
-      saveFavorite(recipe, { multiplier });
-      setSaved(true);
-      onSaveChange?.(true);
+    const nextSaved = !saved;
+    setSaved(nextSaved);
+    onSaveChange?.(nextSaved);
+
+    try {
+      if (favoritesContext) {
+        if (nextSaved) {
+          const result = await favoritesContext.addFavorite(recipe, { multiplier });
+          if (!result) {
+            setSaved(false);
+            onSaveChange?.(false);
+          }
+        } else {
+          const ok = await favoritesContext.removeFavoriteByUrl(recipe.source.url);
+          if (!ok) {
+            setSaved(true);
+            onSaveChange?.(true);
+          }
+        }
+      } else {
+        if (nextSaved) {
+          saveFavorite(recipe, { multiplier });
+        } else {
+          removeFavoriteByUrl(recipe.source.url);
+        }
+      }
+    } catch {
+      // Revert optimistic update on unexpected failure.
+      setSaved(saved);
+      onSaveChange?.(saved);
     }
 
     setTimeout(() => setAnimating(false), 300);

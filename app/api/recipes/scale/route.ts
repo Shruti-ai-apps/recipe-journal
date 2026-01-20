@@ -14,7 +14,26 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const body = await request.json();
+    let body: unknown;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json<ScaleRecipeResponse>(
+        {
+          success: false,
+          error: {
+            code: ErrorCode.VALIDATION_ERROR,
+            message: 'Invalid JSON body',
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
     const { recipe, options } = body as { recipe: Recipe; options: ScalingOptions };
 
     // Validate input

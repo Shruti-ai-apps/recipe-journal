@@ -10,16 +10,36 @@ import type { NextRequest } from 'next/server';
  */
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
+  const error = searchParams.get('error');
+  const errorCode = searchParams.get('error_code');
+  const errorDescription = searchParams.get('error_description');
   const code = searchParams.get('code');
   const type = searchParams.get('type');
   const next = searchParams.get('next') ?? '/';
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return NextResponse.redirect(`${origin}/login?error=supabase_not_configured`);
+  }
+
+  // If Supabase redirected back with an error, send the user to login with details.
+  if (error || errorCode || errorDescription) {
+    const params = new URLSearchParams();
+    if (error) params.set('error', error);
+    if (errorCode) params.set('error_code', errorCode);
+    if (errorDescription) params.set('error_description', errorDescription);
+    params.set('next', next);
+    return NextResponse.redirect(`${origin}/login?${params.toString()}`);
+  }
 
   if (code) {
     const cookieStore = cookies();
 
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           get(name: string) {

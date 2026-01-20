@@ -6,7 +6,8 @@ const withPWA = require('next-pwa')({
   runtimeCaching: [
     {
       // Cache Supabase API calls with network-first strategy
-      urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
+      // Exclude auth endpoints to avoid caching session/token responses.
+      urlPattern: /^https:\/\/.*\.supabase\.co\/(?!auth\/v1\/).*/i,
       handler: 'NetworkFirst',
       options: {
         cacheName: 'supabase-api',
@@ -15,6 +16,9 @@ const withPWA = require('next-pwa')({
           maxAgeSeconds: 24 * 60 * 60, // 24 hours
         },
         networkTimeoutSeconds: 10,
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
       },
     },
     {
@@ -59,16 +63,41 @@ const nextConfig = {
 
   // Allow images from external domains (for recipe images)
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    // In production, require an allowlist to avoid proxying arbitrary third-party URLs.
+    // Configure with `IMAGE_REMOTE_HOSTNAMES`, e.g.:
+    // IMAGE_REMOTE_HOSTNAMES="images.unsplash.com,*.allrecipes.com"
+    remotePatterns:
+      process.env.NODE_ENV !== 'production'
+        ? [
+            {
+              protocol: 'https',
+              hostname: '**',
+            },
+          ]
+        : (process.env.IMAGE_REMOTE_HOSTNAMES || '')
+            .split(',')
+            .map((h) => h.trim())
+            .filter(Boolean)
+            .map((hostname) => ({
+              protocol: 'https',
+              hostname,
+            })),
   },
 
   // Disable x-powered-by header for security
   poweredByHeader: false,
+
+  // Silence optional native dependency warnings from `ws` (used by `@google/genai` in Node runtime).
+  // These modules are optional and `ws` has a JS fallback.
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      bufferutil: false,
+      'utf-8-validate': false,
+    };
+    return config;
+  },
 };
 
 module.exports = withPWA(nextConfig);

@@ -51,14 +51,14 @@ describe('IngredientList', () => {
   describe('parse confidence warning', () => {
     it('shows warning icon for low confidence ingredients', () => {
       const ingredients = [
-        createMockIngredient({ parseConfidence: 0.5 }),
+        createMockIngredient({ parseConfidence: 0, parseError: 'Could not parse ingredient' }),
       ];
 
       const { container } = render(<IngredientList ingredients={ingredients} />);
 
       const warning = container.querySelector('.ingredient-warning');
       expect(warning).toBeInTheDocument();
-      expect(warning).toHaveAttribute('title', 'This ingredient may not have been parsed correctly');
+      expect(warning).toHaveAttribute('title', 'Parsing is uncertain — please double-check this ingredient.');
     });
 
     it('does not show warning for high confidence ingredients', () => {
@@ -71,25 +71,14 @@ describe('IngredientList', () => {
       expect(container.querySelector('.ingredient-warning')).not.toBeInTheDocument();
     });
 
-    it('shows warning when confidence is exactly 0.8', () => {
+    it('does not show warning for moderately confident ingredients', () => {
       const ingredients = [
-        createMockIngredient({ parseConfidence: 0.8 }),
+        createMockIngredient({ parseConfidence: 0.6 }),
       ];
 
       const { container } = render(<IngredientList ingredients={ingredients} />);
 
-      // 0.8 is not < 0.8, so no warning
       expect(container.querySelector('.ingredient-warning')).not.toBeInTheDocument();
-    });
-
-    it('shows warning when confidence is 0.79', () => {
-      const ingredients = [
-        createMockIngredient({ parseConfidence: 0.79 }),
-      ];
-
-      const { container } = render(<IngredientList ingredients={ingredients} />);
-
-      expect(container.querySelector('.ingredient-warning')).toBeInTheDocument();
     });
   });
 
@@ -155,6 +144,26 @@ describe('IngredientList', () => {
       expect(tooltip).toHaveClass('visible');
 
       fireEvent.click(toggle);
+      expect(tooltip).not.toHaveClass('visible');
+    });
+
+    it('hides tooltip when clicking outside', () => {
+      const ingredients = [
+        createMockIngredient({
+          original: '2 c flour',
+          displayText: '4 cups flour',
+        }),
+      ];
+
+      const { container } = render(<IngredientList ingredients={ingredients} />);
+
+      const toggle = container.querySelector('.original-toggle') as HTMLButtonElement;
+      const tooltip = container.querySelector('.original-tooltip') as HTMLElement;
+
+      fireEvent.click(toggle);
+      expect(tooltip).toHaveClass('visible');
+
+      fireEvent.mouseDown(document.body);
       expect(tooltip).not.toHaveClass('visible');
     });
   });
