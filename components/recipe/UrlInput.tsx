@@ -98,7 +98,7 @@ function UrlInput({ onSubmit, disabled = false }: UrlInputProps) {
       </button>
 
       <p className="url-hint">
-        Supports AllRecipes, Food Network, Yummly, and many other recipe websites
+        Paste a link from your favorite recipe site. Works with most popular cooking sites.
       </p>
     </form>
   );
