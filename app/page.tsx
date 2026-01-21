@@ -26,9 +26,13 @@ import {
   getRecentFavorites,
   removeFavorite,
 } from '@/services/favorites';
+import { useAuth } from '@/contexts';
 import './page.css';
 
 export default function HomePage() {
+  const { user, isConfigured } = useAuth();
+  const canUseSmartScale = isConfigured && !!user;
+
   const [recipe, setRecipe] = useState<Recipe | null>(null);
   const [scaledRecipe, setScaledRecipe] = useState<ScaledRecipe | null>(null);
   const [multiplier, setMultiplier] = useState<number>(1);
@@ -78,6 +82,15 @@ export default function HomePage() {
     setCookingTimeAdjustment(undefined);
     setIsAIPowered(false);
   };
+
+  // Ensure smart scaling is only available for authenticated users.
+  useEffect(() => {
+    if (!canUseSmartScale && smartScaleEnabled) {
+      setSmartScaleEnabled(false);
+      resetSmartScaleState(scaledRecipe?.scalingTips || []);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canUseSmartScale]);
 
   const scheduleSmartScale = (
     recipeToScale: Recipe,
@@ -210,7 +223,7 @@ export default function HomePage() {
       setScaledRecipe(scaled);
 
       // If smart scaling is enabled, also get AI-powered scaling
-      if (smartScaleEnabled) {
+      if (canUseSmartScale && smartScaleEnabled) {
         scheduleSmartScale(recipe, newMultiplier, scaled.scalingTips || []);
       } else {
         // Clear smart scaling data when disabled
@@ -227,6 +240,7 @@ export default function HomePage() {
   };
 
   const handleSmartScaleToggle = async (enabled: boolean) => {
+    if (!canUseSmartScale) return;
     setSmartScaleEnabled(enabled);
 
     // If enabling and we have a recipe with non-1x multiplier, fetch smart scaling
@@ -297,12 +311,14 @@ export default function HomePage() {
                 onScale={handleScale}
                 disabled={loading}
               />
-              <SmartScaleToggle
-                enabled={smartScaleEnabled}
-                onToggle={handleSmartScaleToggle}
-                disabled={loading}
-                loading={smartScaleLoading}
-              />
+              {canUseSmartScale && (
+                <SmartScaleToggle
+                  enabled={smartScaleEnabled}
+                  onToggle={handleSmartScaleToggle}
+                  disabled={loading}
+                  loading={smartScaleLoading}
+                />
+              )}
             </div>
 
             <ScalingTips

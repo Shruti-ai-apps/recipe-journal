@@ -6,6 +6,7 @@
  * Displays AI-generated or default scaling tips and cooking time adjustments
  */
 
+import { useEffect, useState } from 'react';
 import './ScalingTips.css';
 
 interface ScalingTipsProps {
@@ -22,13 +23,25 @@ function ScalingTips({
   cookingTimeAdjustment,
   isAIPowered = false,
 }: ScalingTipsProps) {
+  const [isOpen, setIsOpen] = useState(() => !isAIPowered);
+
+  useEffect(() => {
+    setIsOpen(!isAIPowered);
+  }, [isAIPowered, tips, cookingTimeAdjustment]);
+
   // Don't render if no content
   if (tips.length === 0 && !cookingTimeAdjustment) {
     return null;
   }
 
   return (
-    <details className="scaling-tips" open>
+    <details
+      className="scaling-tips"
+      open={isOpen}
+      onToggle={(event) =>
+        setIsOpen((event.currentTarget as HTMLDetailsElement).open)
+      }
+    >
       <summary className="scaling-tips-summary">
         <span className="scaling-tips-title">
           <span className="scaling-tips-icon" aria-hidden="true">💡</span>

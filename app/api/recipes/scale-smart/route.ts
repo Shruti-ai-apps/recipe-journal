@@ -11,6 +11,7 @@ import { smartScaleIngredients, isGeminiConfigured, SmartScaleRequest } from '@/
 import { CacheService } from '@/lib/cache';
 import { ErrorCode, SmartScaleRecipeResponse, Recipe } from '@/types';
 import { createHash } from 'crypto';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
 
 export const runtime = 'nodejs';
 
@@ -101,10 +102,78 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    const cookieMutations: Array<{ name: string; value: string; options: CookieOptions }> = [];
+
+    const applyCookieMutations = (response: NextResponse) => {
+      for (const mutation of cookieMutations) {
+        response.cookies.set({
+          name: mutation.name,
+          value: mutation.value,
+          ...mutation.options,
+        });
+      }
+      return response;
+    };
+
+    const json = (payload: SmartScaleRecipeResponse, init?: { status?: number }) => {
+      const response = NextResponse.json<SmartScaleRecipeResponse>(payload, init);
+      return applyCookieMutations(response);
+    };
+
+    // Require authentication to protect against public LLM spend.
+    let userId: string | null = null;
+    if (supabaseUrl && supabaseAnonKey) {
+      const supabase = createServerClient(
+        supabaseUrl,
+        supabaseAnonKey,
+        {
+          cookies: {
+            get(name: string) {
+              return request.cookies.get(name)?.value;
+            },
+            set(name: string, value: string, options: CookieOptions) {
+              cookieMutations.push({ name, value, options });
+            },
+            remove(name: string, options: CookieOptions) {
+              cookieMutations.push({ name, value: '', options });
+            },
+          },
+        }
+      );
+
+      const { data, error } = await supabase.auth.getUser();
+      if (!error) {
+        userId = data.user?.id ?? null;
+      }
+    }
+
+    if (!userId) {
+      return json(
+        {
+          success: false,
+          error: {
+            // Reuse a generic code to avoid expanding the public error surface area.
+            code: ErrorCode.VALIDATION_ERROR,
+            message: 'Please sign in to use Smart Scale.',
+          },
+          meta: {
+            requestId,
+            processingTime: Date.now() - startTime,
+            aiPowered: false,
+            cached: false,
+          },
+        },
+        { status: 401 }
+      );
+    }
+
     // Rate limiting
-    const clientId = getClientIdentifier(request);
+    const clientId = userId || getClientIdentifier(request);
     if (!checkRateLimit(clientId)) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: false,
           error: {
@@ -127,7 +196,7 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: false,
           error: {
@@ -152,7 +221,7 @@ export async function POST(request: NextRequest) {
 
     // Validate recipe
     if (!recipe || !recipe.ingredients || recipe.ingredients.length === 0) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: false,
           error: {
@@ -172,7 +241,7 @@ export async function POST(request: NextRequest) {
 
     // Validate multiplier
     if (typeof multiplier !== 'number' || multiplier < 0.1 || multiplier > 10) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: false,
           error: {
@@ -200,7 +269,7 @@ export async function POST(request: NextRequest) {
     const cacheKey = getSmartScaleCacheKey(recipe, multiplier);
     const cachedResult = smartScaleCache.get<Awaited<ReturnType<typeof smartScaleIngredients>>>(cacheKey);
     if (cachedResult) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: true,
           data: {
@@ -223,7 +292,7 @@ export async function POST(request: NextRequest) {
 
     // Check if Gemini is configured (only required on a cache miss)
     if (!isGeminiConfigured()) {
-      return NextResponse.json<SmartScaleRecipeResponse>(
+      return json(
         {
           success: false,
           error: {
@@ -254,7 +323,7 @@ export async function POST(request: NextRequest) {
 
     smartScaleCache.set(cacheKey, result);
 
-    return NextResponse.json<SmartScaleRecipeResponse>(
+    return json(
       {
         success: true,
         data: {
